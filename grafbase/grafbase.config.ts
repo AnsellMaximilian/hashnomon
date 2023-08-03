@@ -25,7 +25,21 @@ const hashnode = connector.GraphQL({
   url: g.env("HASHNODE_API_URL"),
 });
 
-g.datasource(hashnode, { namespace: "Hashnode" });
+g.datasource(hashnode, { namespace: "hashnode" });
+
+const statsType = g.type("Stats", {
+  strength: g.int(),
+  defense: g.int(),
+  speed: g.int(),
+});
+
+g.extend("HashnodeUser", {
+  stats: {
+    args: { myArg: g.string().optional() },
+    returns: g.json(),
+    resolver: "stats",
+  },
+});
 
 export default config({
   schema: g,
