@@ -1,14 +1,10 @@
-type Stats = {
-  strength: number;
-  defense: number;
-  speed: number;
-};
+import { DevStats } from "@/lib/services/devs";
 
 type GetStatsFunc = (args: {
   numFollowers: number;
   numReactions: number;
   numPosts: number;
-}) => Stats;
+}) => DevStats;
 
 const getStats: GetStatsFunc = ({ numFollowers, numPosts, numReactions }) => {
   let totalPoints = numFollowers + numPosts + numReactions;

@@ -1,16 +1,8 @@
 import getStats from "@/common/getStats";
-
-type User = {
-  _id?: string;
-  username?: string;
-  name?: string;
-  numPosts?: number;
-  numReactions?: number;
-  numFollowers?: number;
-};
+import { Dev } from "@/lib/services/devs";
 
 export default function StatsResolver(
-  { _id, username, name, numPosts, numReactions, numFollowers }: User,
+  { _id, username, name, numPosts, numReactions, numFollowers }: Dev,
   {}
 ) {
   return getStats({
