@@ -14,7 +14,7 @@ const Bar = ({
   side: "RIGHT" | "LEFT";
 }) => {
   return (
-    <div className="relative p-2 bg-gray-300">
+    <div className="relative p-2 bg-gray-400 bg-gradient-to-b from-gray-400 via-gray-300 to-gray-400">
       <div
         style={{
           width: `${width}%`,
