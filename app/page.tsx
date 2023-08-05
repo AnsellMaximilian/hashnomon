@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { BsFillKeyboardFill as KeyboardIcon } from "react-icons/bs";
 import { HiCommandLine as CommandLineIcon } from "react-icons/hi2";
+import logo from "@/assets/images/logo.svg";
 
 export interface DevData {
   dev: Dev | null;
@@ -54,7 +55,7 @@ export default function Home() {
         Choose Your Dev!
       </h1>
       <div className="relative">
-        <div className="flex gap-4 justify-between mt-4">
+        <div className="flex gap-4 justify-between mt-4 min-h-[500px] bg-secondary shadow-md rounded-md">
           <DevSelect
             devData={dev1Data}
             setDev={setDev}
@@ -62,6 +63,10 @@ export default function Home() {
             resetDevData={resetDevData}
             number={1}
           />
+          <div className="flex items-center justify-center relative">
+            <div className="absolute bg-primary bg-gradient-to-r from-primary via-blue-400 to-primary w-4 inset-y-0 left-1/2 -translate-x-1/2"></div>
+            <Image src={logo} alt="logo" className="w-32 h-32 relative" />
+          </div>
           <DevSelect
             devData={dev2Data}
             setDev={setDev}

@@ -19,7 +19,7 @@ export default function DevSelect({
   side?: "RIGHT" | "LEFT";
 }) {
   return (
-    <div className="shadow-md rounded-md flex-1 p-4 bg-secondary min-h-[500px] flex flex-col">
+    <div className={`flex-1 p-4 flex flex-col`}>
       <div className="flex justify-between items-center mb-4">
         <div className="mb-2 text-2xl font-bold">Dev {number}</div>
         {devData.dev && (
