@@ -1,15 +1,15 @@
 import api from "../axios";
 
 export type Dev = {
-  _id?: string;
-  username?: string;
-  name?: string;
-  numPosts?: number;
-  numReactions?: number;
-  numFollowers?: number;
-  numFollowing?: number;
-  photo?: string;
-  stats?: DevStats;
+  _id: string;
+  username: string;
+  name: string;
+  numPosts: number;
+  numReactions: number;
+  numFollowers: number;
+  numFollowing: number;
+  photo: string;
+  stats: DevStats;
 };
 
 export type DevStats = {
@@ -53,5 +53,7 @@ export const getDev = async (username: string) => {
     }
   );
 
-  return res.data as Dev;
+  if (res.data.errors) throw new Error("No dev has that username.");
+
+  return res.data.data.hashnode.user as Dev;
 };
