@@ -5,7 +5,8 @@ import DevSelect from "@/components/DevSelect";
 import { Dev, getDev } from "@/lib/services/devs";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { FiRefreshCcw as RefreshIcon } from "react-icons/fi";
+import { BsFillKeyboardFill as KeyboardIcon } from "react-icons/bs";
+import { HiCommandLine as CommandLineIcon } from "react-icons/hi2";
 
 export interface DevData {
   dev: Dev | null;
@@ -52,22 +53,31 @@ export default function Home() {
       <h1 className="text-5xl font-bold italic text-center text-primary">
         Choose Your Dev!
       </h1>
-      <div className="flex gap-4 justify-between mt-4">
-        <DevSelect
-          devData={dev1Data}
-          setDev={setDev}
-          setDevData={setDev1Data}
-          resetDevData={resetDevData}
-          number={1}
-        />
-        <DevSelect
-          devData={dev2Data}
-          setDev={setDev}
-          setDevData={setDev2Data}
-          resetDevData={resetDevData}
-          number={2}
-          side="RIGHT"
-        />
+      <div className="relative">
+        <div className="flex gap-4 justify-between mt-4">
+          <DevSelect
+            devData={dev1Data}
+            setDev={setDev}
+            setDevData={setDev1Data}
+            resetDevData={resetDevData}
+            number={1}
+          />
+          <DevSelect
+            devData={dev2Data}
+            setDev={setDev}
+            setDevData={setDev2Data}
+            resetDevData={resetDevData}
+            number={2}
+            side="RIGHT"
+          />
+        </div>
+        {dev1Data?.dev && dev2Data?.dev && (
+          <div className="mt-4 flex justify-center">
+            <button className="px-8 py-6 text-3xl rounded-full shadow-lg text-white bg-primary font-bold hover:opacity-90 flex gap-6 justify-between items-center">
+              <KeyboardIcon /> <span>FIGHT</span> <CommandLineIcon />
+            </button>
+          </div>
+        )}
       </div>
     </main>
   );
