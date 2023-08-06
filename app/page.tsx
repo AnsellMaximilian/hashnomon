@@ -50,7 +50,7 @@ export default function Home() {
     }
   };
   return (
-    <main className="h-screen p-4 bg-gray-50">
+    <main className="h-screen p-4 bg-gray-50 overflow-x-hidden">
       <h1 className="text-5xl font-bold italic text-center text-primary">
         Choose Your Dev!
       </h1>

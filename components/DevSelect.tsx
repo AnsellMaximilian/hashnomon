@@ -2,6 +2,7 @@ import React, { Dispatch, SetStateAction } from "react";
 import DevCard from "./DevCard";
 import { DevData } from "@/app/page";
 import { AiOutlineLoading3Quarters as LoadIcon } from "react-icons/ai";
+import { motion } from "framer-motion";
 
 export default function DevSelect({
   setDevData,
@@ -35,7 +36,11 @@ export default function DevSelect({
         {devData?.dev ? (
           <DevCard dev={devData.dev} side={side} />
         ) : (
-          <div className="flex gap-2 w-full">
+          <motion.div
+            className="flex gap-2 w-full"
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
             <input
               type="text"
               value={devData.searchValue}
@@ -60,7 +65,7 @@ export default function DevSelect({
                 <LoadIcon className="animate-spin" />
               )}
             </button>
-          </div>
+          </motion.div>
         )}
       </div>
     </div>

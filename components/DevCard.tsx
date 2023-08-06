@@ -1,6 +1,7 @@
 import { Dev } from "@/lib/services/devs";
 import React from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 const Bar = ({
   width,
@@ -15,14 +16,17 @@ const Bar = ({
 }) => {
   return (
     <div className="relative p-2 bg-gray-400 bg-gradient-to-b from-gray-400 via-gray-300 to-gray-400">
-      <div
-        style={{
-          width: `${width}%`,
-        }}
+      <motion.div
+        initial={{ width: 0 }}
+        animate={{ width: `${width}%` }}
+        transition={{ delay: 0.35 }}
+        // style={{
+        //   width: `${width}%`,
+        // }}
         className={`bg-red-600 h-full absolute inset-y-0 bg-gradient-to-b ${colorClasses} ${
           side === "RIGHT" ? "right-0" : "left-0"
         }`}
-      ></div>
+      ></motion.div>
       <div
         className={`relative font-bold text-white ${
           side === "RIGHT" ? "text-right" : "text-left"
@@ -46,7 +50,11 @@ export default function DevCard({
   side?: "RIGHT" | "LEFT";
 }) {
   return (
-    <div className="w-full">
+    <motion.div
+      className="w-full"
+      initial={{ opacity: 0, x: side === "RIGHT" ? 50 : -50 }}
+      animate={{ opacity: 1, x: 0 }}
+    >
       <div className="flex gap-4 items-center">
         <div
           className={`rounded-full border-4 border-primary overflow-hidden shadow-lg ${
@@ -85,6 +93,6 @@ export default function DevCard({
           @{username}
         </h2>
       </div>
-    </div>
+    </motion.div>
   );
 }
