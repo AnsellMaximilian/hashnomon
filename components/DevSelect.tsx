@@ -1,8 +1,8 @@
 import React, { Dispatch, SetStateAction } from "react";
 import DevCard from "./DevCard";
-import { DevData } from "@/app/page";
 import { AiOutlineLoading3Quarters as LoadIcon } from "react-icons/ai";
 import { motion } from "framer-motion";
+import { DevData } from "./Selection";
 
 export default function DevSelect({
   setDevData,
