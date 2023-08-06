@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { useNotification } from "@/contexts/Notifications";
 import { motion } from "framer-motion";
+import { RxCross2 as Cross } from "react-icons/rx";
 
 const Notification = ({
   message,
@@ -17,7 +18,12 @@ const Notification = ({
       animate={{ x: 0 }}
       className="fixed top-8 right-8 bg-white shadow-md"
     >
-      <div className="p-4">{message}</div>
+      <div className="p-4 flex items-center justify-between gap-4">
+        <div>{message}</div>
+        <button className="hover:opacity-50" onClick={() => hideNotification()}>
+          <Cross />
+        </button>
+      </div>
       <div
         className={`h-2 ${
           status
