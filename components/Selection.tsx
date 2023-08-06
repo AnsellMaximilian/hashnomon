@@ -41,10 +41,15 @@ export default function Selection() {
         setDev2Data((prev) => ({ ...prev, dev: dev, status: "SUCCESS" }));
       }
     } catch (error) {
+      const errorValue: DevData = {
+        dev: null,
+        searchValue: "",
+        status: "ERROR",
+      };
       if (number === 1) {
-        setDev1Data((prev) => ({ ...prev, dev: null, status: "ERROR" }));
+        setDev1Data(errorValue);
       } else {
-        setDev2Data((prev) => ({ ...prev, dev: null, status: "ERROR" }));
+        setDev2Data(errorValue);
       }
       showNotification("Username not found.", "ERROR");
     }
