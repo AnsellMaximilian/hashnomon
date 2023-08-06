@@ -2,6 +2,8 @@ import { Dev } from "@/lib/services/devs";
 import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import fallbackPicture from "@/assets/images/404.svg";
+import { useState, useEffect } from "react";
 
 const Bar = ({
   width,
@@ -20,9 +22,6 @@ const Bar = ({
         initial={{ width: 0 }}
         animate={{ width: `${width}%` }}
         transition={{ delay: 0.35 }}
-        // style={{
-        //   width: `${width}%`,
-        // }}
         className={`bg-red-600 h-full absolute inset-y-0 bg-gradient-to-b ${colorClasses} ${
           side === "RIGHT" ? "right-0" : "left-0"
         }`}
@@ -49,6 +48,16 @@ export default function DevCard({
   dev: Dev;
   side?: "RIGHT" | "LEFT";
 }) {
+  const [devPhoto, setDevPhoto] = useState(fallbackPicture);
+  useEffect(() => {
+    try {
+      const photoURL = new URL(photo);
+      setDevPhoto(photo);
+    } catch (error) {
+      setDevPhoto(fallbackPicture);
+    }
+  }, [photo]);
+
   return (
     <motion.div
       className="w-full"
@@ -61,7 +70,14 @@ export default function DevCard({
             side === "RIGHT" ? "order-2" : ""
           }`}
         >
-          <Image src={photo} width={125} height={125} alt="Dev Photo" />
+          <Image
+            src={devPhoto}
+            width={125}
+            height={125}
+            alt="Dev Photo"
+            placeholder={fallbackPicture}
+            onError={() => setDevPhoto(fallbackPicture)}
+          />
         </div>
         <div className="flex flex-col gap-2 flex-grow">
           <Bar
