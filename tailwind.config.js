@@ -11,6 +11,7 @@ module.exports = {
         primary: "#2962FF",
         secondary: "#F1F5F9",
         dark: "#E2E8F0",
+        light: "#E0E7FF",
       },
 
       backgroundImage: {
