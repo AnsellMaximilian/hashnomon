@@ -41,8 +41,19 @@ g.extend("HashnodeUser", {
   },
 });
 
+const provider = auth.JWT({
+  issuer: "nextauth",
+  secret: g.env("NEXTAUTH_SECRET"),
+});
+
 export default config({
   schema: g,
+  auth: {
+    providers: [provider],
+    rules: (rules) => {
+      rules.public();
+    },
+  },
   // Integrate Auth
   // https://grafbase.com/docs/auth
   // auth: {

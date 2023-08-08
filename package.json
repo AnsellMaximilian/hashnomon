@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@apollo/client": "^3.8.0",
     "@types/node": "20.4.6",
     "@types/react": "18.2.18",
     "@types/react-dom": "18.2.7",
@@ -17,7 +18,9 @@
     "eslint": "8.46.0",
     "eslint-config-next": "13.4.12",
     "framer-motion": "^10.15.0",
+    "graphql": "^16.7.1",
     "hashnomon": "file:",
+    "jsonwebtoken": "^9.0.1",
     "next": "13.4.12",
     "next-auth": "^4.22.4",
     "postcss": "8.4.27",
@@ -28,6 +31,7 @@
     "typescript": "5.1.6"
   },
   "devDependencies": {
-    "@grafbase/sdk": "~0.1.0"
+    "@grafbase/sdk": "~0.1.0",
+    "@types/jsonwebtoken": "^9.0.2"
   }
 }

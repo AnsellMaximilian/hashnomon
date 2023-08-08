@@ -3,7 +3,7 @@
 import React from "react";
 import DevCard from "@/components/DevCard";
 import DevSelect from "@/components/DevSelect";
-import { Dev, getDev } from "@/lib/services/devs";
+import { Dev, GetDevQuery, getDev } from "@/lib/services/devs";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { BsFillKeyboardFill as KeyboardIcon } from "react-icons/bs";
@@ -13,6 +13,7 @@ import {
   NotificationProvider,
   useNotification,
 } from "@/contexts/Notifications";
+import { gql, useQuery } from "@apollo/client";
 
 export interface DevData {
   dev: Dev | null;
@@ -29,6 +30,35 @@ const defaultDevData: DevData = {
 export default function Selection() {
   const [dev1Data, setDev1Data] = useState<DevData>(defaultDevData);
   const [dev2Data, setDev2Data] = useState<DevData>(defaultDevData);
+
+  // const { loading, error, data } = useQuery<{
+  //   data: { user: Dev };
+  // }>(GetDevQuery, {
+  //   variables: {
+  //     username: dev1Data.searchValue,
+  //   },
+  // });
+
+  const { loading, error, data } = useQuery(gql`
+    query GetDev {
+      hashnode {
+        user(username: "ansellmax") {
+          _id
+          username
+          name
+          numFollowers
+          numReactions
+          numPosts
+          numFollowing
+          photo
+          stats
+        }
+      }
+    }
+  `);
+
+  console.log({ loading, error, data });
+  console.log(error?.stack);
 
   const { showNotification } = useNotification();
 

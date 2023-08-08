@@ -1,3 +1,4 @@
+import { gql } from "@apollo/client";
 import api from "../axios";
 
 export type Dev = {
@@ -18,8 +19,25 @@ export type DevStats = {
   speed: number;
 };
 
-const GetDevQuery = `
+export const getDevQuery = `
 query GetDev($username: String!) {
+    hashnode {
+      user(username: $username) {
+        _id
+        username
+        name
+        numFollowers
+        numReactions
+        numPosts
+        numFollowing
+        photo
+        stats
+      }
+    }
+  }
+`;
+export const GetDevQuery = gql`
+  query GetDev($username: String!) {
     hashnode {
       user(username: $username) {
         _id
@@ -40,7 +58,7 @@ export const getDev = async (username: string) => {
   const res = await api.post(
     "",
     {
-      query: GetDevQuery,
+      query: getDevQuery,
       variables: {
         username: username,
       },
