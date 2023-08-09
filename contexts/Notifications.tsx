@@ -50,7 +50,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
       value={{ showNotification, hideNotification }}
     >
       {children}
-      {notification && <Notification message={notification} status={status} />}
+      <Notification message={notification} status={status} />
     </NotificationContext.Provider>
   );
 };
