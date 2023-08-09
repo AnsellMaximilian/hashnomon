@@ -8,6 +8,8 @@ import Image from "next/image";
 import logo from "@/assets/images/logo.svg";
 import { useLazyQuery } from "@apollo/client";
 import { useNotification } from "@/contexts/Notifications";
+import { BsFillKeyboardFill as KeyboardIcon } from "react-icons/bs";
+import { HiCommandLine as CommandLineIcon } from "react-icons/hi2";
 
 export default function Selection() {
   const { showNotification } = useNotification();
@@ -60,13 +62,13 @@ export default function Selection() {
             setDev={setDev2}
           />
         </div>
-        {/* {dev1Data?.dev && dev2Data?.dev && (
+        {dev1 && dev2 && (
           <div className="mt-4 flex justify-center">
             <button className="px-8 py-6 text-3xl rounded-full shadow-lg text-white bg-primary font-bold hover:opacity-90 flex gap-6 justify-between items-center">
               <KeyboardIcon /> <span>FIGHT</span> <CommandLineIcon />
             </button>
           </div>
-        )} */}
+        )}
       </div>
     </main>
   );
