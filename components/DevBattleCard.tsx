@@ -1,6 +1,6 @@
 import { Dev } from "@/lib/services/devs";
 import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useAnimate } from "framer-motion";
 import Image from "next/image";
 import fallbackPicture from "@/assets/images/404.svg";
 
@@ -16,6 +16,8 @@ export default function DevBattleCard({
   side = "LEFT",
 }: DevBattleCardProps) {
   const [devPhoto, setDevPhoto] = useState(fallbackPicture);
+  const [scope, animate] = useAnimate();
+
   useEffect(() => {
     try {
       const photoURL = new URL(dev.photo);
@@ -27,8 +29,15 @@ export default function DevBattleCard({
 
   const displayedHealth = health < 0 ? 0 : health;
 
+  useEffect(() => {
+    if (displayedHealth < 1000) {
+      animate(scope.current, { x: [25, 0, 25, 0, 25, 0] }, { duration: 0.5 });
+    }
+  }, [displayedHealth, scope, animate]);
+
   return (
     <motion.div
+      ref={scope}
       className="w-full"
       initial={{ opacity: 0, x: side === "RIGHT" ? 50 : -50 }}
       animate={{ opacity: 1, x: 0 }}

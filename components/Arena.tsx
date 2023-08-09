@@ -114,7 +114,7 @@ export default function Arena() {
                   <div className="absolute bg-primary bg-gradient-to-r from-primary via-blue-400 to-primary w-4 inset-y-0 left-1/2 -translate-x-1/2"></div>
                   <motion.div
                     className="w-32 h-32 relative z-50"
-                    exit={{ scale: 10 }}
+                    exit={{ scale: 10, rotate: 90 }}
                     transition={{ duration: 0.5 }}
                   >
                     <Image
