@@ -5,6 +5,7 @@ import logo from "@/assets/images/logo.svg";
 import hashnodex from "@/assets/images/hashnodex.svg";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useNotification } from "@/contexts/Notifications";
+import Link from "next/link";
 
 const NavListItem = ({
   label,
@@ -12,12 +13,14 @@ const NavListItem = ({
   description,
   onclick,
   roundImage = false,
+  href,
 }: {
   label: string;
   icon: string;
   description: string;
   onclick?: () => void;
   roundImage?: boolean;
+  href?: string;
 }) => {
   return (
     <li>
@@ -26,6 +29,7 @@ const NavListItem = ({
           className="absolute inset-0 p-4 flex flex-col items-center justify-center skew-x-12"
           onClick={onclick}
         >
+          {href && <Link href={href} className="absolute inset-0"></Link>}
           <div className="flex flex-col gap-4 justify-between items-center mt-auto">
             <Image
               src={icon}
@@ -54,6 +58,7 @@ export default function Navigation() {
     if (authenticated) {
       showNotification("Successfully logged in.", "SUCCESS");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authenticated]);
 
   return (
@@ -70,7 +75,12 @@ export default function Navigation() {
           }
           onclick={authenticated ? () => signOut() : () => signIn("github")}
         />
-        <NavListItem label="Battle" icon={logo} description="Just battle" />
+        <NavListItem
+          label="Battle"
+          icon={logo}
+          description="Just battle"
+          href="/play"
+        />
         <NavListItem
           label="Hashnodex"
           icon={hashnodex}
