@@ -11,7 +11,7 @@ import { useNotification } from "@/contexts/Notifications";
 import { BsFillKeyboardFill as KeyboardIcon } from "react-icons/bs";
 import { HiCommandLine as CommandLineIcon } from "react-icons/hi2";
 
-export default function Selection() {
+export default function Arena() {
   const { showNotification } = useNotification();
   const [getDev1, { loading: dev1Loading, error: dev1Error, data: dev1Data }] =
     useLazyQuery<DevQueryResult>(GetDevQuery, {

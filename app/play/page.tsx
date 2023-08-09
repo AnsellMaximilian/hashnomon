@@ -1,6 +1,6 @@
 "use client";
 
-import Selection from "@/components/Selection";
+import Arena from "@/components/Arena";
 import { NotificationProvider } from "@/contexts/Notifications";
 import { SessionProvider } from "next-auth/react";
 import { ApolloProviderWrapper } from "@/components/ApolloProviderWrapper";
@@ -10,7 +10,7 @@ export default function Play() {
     <SessionProvider>
       <ApolloProviderWrapper>
         <NotificationProvider>
-          <Selection />
+          <Arena />
         </NotificationProvider>
       </ApolloProviderWrapper>
     </SessionProvider>
