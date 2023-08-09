@@ -83,6 +83,16 @@ export default function Arena() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameOn, turn, dev1, dev2]);
 
+  useEffect(() => {
+    if (dev1Health < 0 || dev2Health < 0) {
+      showNotification("Someone won!", "SUCCESS");
+      setGameOn(false);
+      setDev1Health(1000);
+      setDev2Health(1000);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dev1Health, dev2Health]);
+
   return (
     <main className="h-screen p-4 bg-gray-50 overflow-x-hidden">
       <AnimatePresence>
