@@ -60,10 +60,11 @@ export default function DevSelect({
                 if (!searchValue) {
                   showNotification("Please enter a username", "ERROR");
                 } else {
+                  setSearchValue("");
+
                   getDev({
                     variables: { username: searchValue },
                     onCompleted: (data: DevQueryResult) => {
-                      setSearchValue("");
                       setDev(data.hashnode.user);
                     },
                   });
