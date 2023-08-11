@@ -1,13 +1,17 @@
+import { Move } from "@/lib/services/moves";
+
 interface Params {
+  move: Move;
   attackerStrength: number;
   defenderDefense: number;
 }
 
 export function calculateDamage({
+  move,
   attackerStrength,
   defenderDefense,
 }: Params): number {
   if (attackerStrength <= 0) attackerStrength = 1;
-  let damage = 100 + attackerStrength * 10 - defenderDefense;
+  let damage = (attackerStrength * move.power) / 3 - defenderDefense + 10;
   return Math.round(damage);
 }

@@ -27,7 +27,7 @@ import {
   GetUserMovesQuery,
   GetUserMovesQueryResult,
 } from "@/lib/services/moves";
-import { generateUniqueRandomNumbers } from "@/common/utils";
+import { generateUniqueRandomNumbers, wait } from "@/common/utils";
 
 export default function Arena() {
   const { showNotification } = useNotification();
@@ -142,41 +142,68 @@ export default function Arena() {
   const [turn, setTurn] = useState<1 | 2>(1);
 
   // Playing the game
-  useEffect(() => {
-    let timer: NodeJS.Timer;
-    if (gameOn && dev1 && dev2) {
-      const firstTurn = dev1.stats.speed >= dev2.stats.speed ? 1 : 2;
-      const secondTurn = firstTurn === 1 ? 2 : 1;
 
-      timer = setInterval(() => {
-        if (turn === firstTurn) {
-          const damage = calculateDamage({
-            attackerStrength: dev1.stats.strength,
-            defenderDefense: dev2.stats.defense,
+  const doMove = async ({ moveId }: { moveId: string }) => {
+    if (dev1 && dev1Moves?.userMoves.moves.edges && gameOn && dev2) {
+      const moveEdge = dev1Moves.userMoves.moves.edges.find(
+        (edge) => edge.node.id === moveId
+      );
+      if (moveEdge) {
+        const move = moveEdge.node;
+        if (move.type === "ATTACK") {
+          setDev2Health((prev) => {
+            const damage = calculateDamage({
+              move: moveEdge.node,
+              attackerStrength: dev1.stats.strength,
+              defenderDefense: dev2.stats.defense,
+            });
+            return prev - damage;
           });
-          setDev2Health((prev) => prev - damage);
-          showNotification(
-            `${dev1.username} attacked ${dev2.username} for ${damage} damage`
-          );
-
-          setTurn(secondTurn);
-        } else {
-          const damage = calculateDamage({
-            attackerStrength: dev2.stats.strength,
-            defenderDefense: dev1.stats.defense,
+        } else if (move.type === "POWER_UP") {
+          setDev1((prev) => {
+            if (prev) {
+              const stats = { ...prev.stats };
+              if (move.targetStat === "STRENGTH") {
+                stats.strength = stats.strength + move.power;
+              } else if (move.targetStat === "DEFENSE") {
+                stats.defense = stats.defense + move.power;
+              } else if (move.targetStat === "SPEED") {
+                stats.speed = stats.speed + move.power;
+              }
+              return { ...prev, stats };
+            }
+            return prev;
           });
-          setDev1Health((prev) => prev - damage);
-          showNotification(
-            `${dev2.username} attacked ${dev1.username} for ${damage} damage`
-          );
-          setTurn(firstTurn);
         }
-      }, 5000);
+      }
     }
+    setTurn(2);
+    await wait(3000);
+    computerMove();
+  };
 
-    return () => clearInterval(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameOn, turn, dev1, dev2]);
+  const computerMove = () => {
+    if (dev1 && dev2Moves?.userMoves.moves.edges && gameOn && dev2) {
+      const moveEdge =
+        dev2Moves.userMoves.moves.edges[
+          Math.floor(Math.random() * dev2Moves.userMoves.moves.edges.length)
+        ];
+      if (moveEdge) {
+        const move = moveEdge.node;
+        if (move.type === "ATTACK") {
+          setDev1Health((prev) => {
+            const damage = calculateDamage({
+              move: moveEdge.node,
+              attackerStrength: dev2.stats.strength,
+              defenderDefense: dev1.stats.defense,
+            });
+            return prev - damage;
+          });
+        }
+      }
+    }
+    setTurn(1);
+  };
 
   useEffect(() => {
     if (dev1Health < 0 || dev2Health < 0) {
@@ -258,6 +285,8 @@ export default function Arena() {
                       moves={dev1Moves?.userMoves.moves.edges.map(
                         (edge) => edge.node
                       )}
+                      doMove={doMove}
+                      onTurn={turn === 1}
                     />
                   )}
                 </div>
@@ -280,6 +309,7 @@ export default function Arena() {
                       moves={dev2Moves?.userMoves.moves.edges.map(
                         (edge) => edge.node
                       )}
+                      onTurn={turn === 2}
                     />
                   )}
                 </div>

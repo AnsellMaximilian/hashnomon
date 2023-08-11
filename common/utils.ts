@@ -12,3 +12,9 @@ export function generateUniqueRandomNumbers(count: number, n: number) {
 
   return Array.from(uniqueNumbers);
 }
+
+export function wait(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}

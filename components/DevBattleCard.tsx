@@ -10,6 +10,8 @@ interface DevBattleCardProps {
   health: number;
   side?: "RIGHT" | "LEFT";
   moves?: Move[];
+  doMove?: ({ moveId }: { moveId: string }) => void;
+  onTurn?: boolean;
 }
 
 const statColorMap = {
@@ -18,9 +20,23 @@ const statColorMap = {
   SPEED: "bg-blue-500",
 };
 
-const MoveButton = ({ move }: { move: Move }) => {
+const MoveButton = ({
+  move,
+  doMove,
+  disabled,
+}: {
+  move: Move;
+  doMove?: ({ moveId }: { moveId: string }) => void;
+  disabled: boolean;
+}) => {
   return (
-    <button className="col-span-6 bg-white shadow-md p-4 hover:from-dark hover:to-dark hover:via-white rounded-md bg-gradient-to-b from-gray-100 via-white to-gray-100">
+    <button
+      onClick={() => {
+        if (doMove) doMove({ moveId: move.id });
+      }}
+      disabled={disabled}
+      className="disabled:opacity-70 col-span-6 bg-white shadow-md p-4 hover:from-dark hover:to-dark hover:via-white rounded-md bg-gradient-to-b from-gray-100 via-white to-gray-100"
+    >
       <div className="flex justify-end mb-2 gap-2">
         <div className="p-1 bg-gray-600 text-white text-xs rounded-md">
           {move.type.replace("_", " ")}
@@ -47,6 +63,8 @@ export default function DevBattleCard({
   health,
   moves,
   dev,
+  doMove,
+  onTurn = false,
   side = "LEFT",
 }: DevBattleCardProps) {
   const [devPhoto, setDevPhoto] = useState(fallbackPicture);
@@ -124,7 +142,12 @@ export default function DevBattleCard({
       </div>
       <div className="grid grid-cols-12 gap-2 mt-4 grow">
         {moves?.map((move) => (
-          <MoveButton key={move.id} move={move} />
+          <MoveButton
+            key={move.id}
+            move={move}
+            doMove={doMove}
+            disabled={!onTurn}
+          />
         ))}
       </div>
     </motion.div>
