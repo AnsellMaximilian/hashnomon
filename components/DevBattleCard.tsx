@@ -87,6 +87,7 @@ export default function DevBattleCard({
             width={125}
             height={125}
             alt="Dev Photo"
+            className="aspect-square object-cover"
             placeholder={fallbackPicture}
             onError={() => setDevPhoto(fallbackPicture)}
           />

@@ -1,12 +1,18 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import DevCard from "@/components/DevCard";
 import DevSelect from "@/components/DevSelect";
 import { Dev, DevQueryResult, GetDevQuery } from "@/lib/services/devs";
 import Image from "next/image";
 import logo from "@/assets/images/logo.svg";
-import { useLazyQuery, useQuery } from "@apollo/client";
+import {
+  ApolloQueryResult,
+  OperationVariables,
+  useLazyQuery,
+  useMutation,
+  useQuery,
+} from "@apollo/client";
 import { useNotification } from "@/contexts/Notifications";
 import { BsFillKeyboardFill as KeyboardIcon } from "react-icons/bs";
 import { HiCommandLine as CommandLineIcon } from "react-icons/hi2";
@@ -15,12 +21,53 @@ import { motion } from "framer-motion";
 import DevBattleCard from "./DevBattleCard";
 import { calculateDamage } from "@/common/calculateDamage";
 import {
+  CreateUserMovesQuery,
+  GetMovesQuery,
+  GetMovesQueryResult,
   GetUserMovesQuery,
   GetUserMovesQueryResult,
 } from "@/lib/services/moves";
+import { generateUniqueRandomNumbers } from "@/common/utils";
 
 export default function Arena() {
   const { showNotification } = useNotification();
+
+  const [addNewUserMoves] = useMutation(CreateUserMovesQuery);
+
+  const handleAddUserMoves = useCallback(
+    async (
+      movesResult: GetMovesQueryResult,
+      refetch: (
+        variables?: Partial<OperationVariables> | undefined
+      ) => Promise<ApolloQueryResult<GetUserMovesQueryResult>>,
+      userId?: string
+    ) => {
+      try {
+        const numbers = generateUniqueRandomNumbers(
+          4,
+          movesResult.moveCollection.edges.length
+        );
+        await addNewUserMoves({
+          variables: {
+            userId: userId,
+            moveId1: movesResult.moveCollection.edges[numbers[0]].node.id,
+            moveId2: movesResult.moveCollection.edges[numbers[1]].node.id,
+            moveId3: movesResult.moveCollection.edges[numbers[2]].node.id,
+            moveId4: movesResult.moveCollection.edges[numbers[3]].node.id,
+          },
+        });
+        refetch({ userId: userId });
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  const [getMoves, { loading: movesLoading, error: movesError }] =
+    useLazyQuery<GetMovesQueryResult>(GetMovesQuery);
+
   const [dev1, setDev1] = useState<Dev | null>(null);
   const [dev2, setDev2] = useState<Dev | null>(null);
   const [getDev1, { loading: dev1Loading, error: dev1Error, data: dev1Data }] =
@@ -34,12 +81,18 @@ export default function Arena() {
     data: dev1Moves,
     error: dev1MovesError,
     loading: dev1MovesLoading,
+    refetch: refetchDev1Moves,
   } = useQuery<GetUserMovesQueryResult>(GetUserMovesQuery, {
     variables: {
       userId: dev1?._id,
     },
     onCompleted: (data) => {
       if (data.userMoves === null) {
+        getMoves({
+          onCompleted: async (data) => {
+            handleAddUserMoves(data, refetchDev1Moves, dev1?._id);
+          },
+        });
       } else {
       }
     },
@@ -52,6 +105,28 @@ export default function Arena() {
         username: "",
       },
     });
+
+  const {
+    data: dev2Moves,
+    error: dev2MovesError,
+    loading: dev2MovesLoading,
+    refetch: refetchDev2Moves,
+  } = useQuery<GetUserMovesQueryResult>(GetUserMovesQuery, {
+    variables: {
+      userId: dev2?._id,
+    },
+    onCompleted: (data) => {
+      if (data.userMoves === null) {
+        getMoves({
+          onCompleted: async (data) => {
+            handleAddUserMoves(data, refetchDev2Moves, dev2?._id);
+          },
+        });
+      } else {
+      }
+    },
+    skip: !dev2,
+  });
 
   useEffect(() => {
     if (dev1Error || dev2Error)
@@ -202,6 +277,9 @@ export default function Arena() {
                       dev={dev2}
                       health={dev2Health}
                       side="RIGHT"
+                      moves={dev2Moves?.userMoves.moves.edges.map(
+                        (edge) => edge.node
+                      )}
                     />
                   )}
                 </div>
