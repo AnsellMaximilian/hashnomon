@@ -6,7 +6,7 @@ import DevSelect from "@/components/DevSelect";
 import { Dev, DevQueryResult, GetDevQuery } from "@/lib/services/devs";
 import Image from "next/image";
 import logo from "@/assets/images/logo.svg";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useQuery } from "@apollo/client";
 import { useNotification } from "@/contexts/Notifications";
 import { BsFillKeyboardFill as KeyboardIcon } from "react-icons/bs";
 import { HiCommandLine as CommandLineIcon } from "react-icons/hi2";
@@ -14,9 +14,15 @@ import { AnimatePresence } from "framer-motion";
 import { motion } from "framer-motion";
 import DevBattleCard from "./DevBattleCard";
 import { calculateDamage } from "@/common/calculateDamage";
+import {
+  GetUserMovesQuery,
+  GetUserMovesQueryResult,
+} from "@/lib/services/moves";
 
 export default function Arena() {
   const { showNotification } = useNotification();
+  const [dev1, setDev1] = useState<Dev | null>(null);
+  const [dev2, setDev2] = useState<Dev | null>(null);
   const [getDev1, { loading: dev1Loading, error: dev1Error, data: dev1Data }] =
     useLazyQuery<DevQueryResult>(GetDevQuery, {
       variables: {
@@ -24,14 +30,28 @@ export default function Arena() {
       },
     });
 
+  const {
+    data: dev1Moves,
+    error: dev1MovesError,
+    loading: dev1MovesLoading,
+  } = useQuery<GetUserMovesQueryResult>(GetUserMovesQuery, {
+    variables: {
+      userId: dev1?._id,
+    },
+    onCompleted: (data) => {
+      if (data.userMoves === null) {
+      } else {
+      }
+    },
+    skip: !dev1,
+  });
+
   const [getDev2, { loading: dev2Loading, error: dev2Error, data: dev2Data }] =
     useLazyQuery<DevQueryResult>(GetDevQuery, {
       variables: {
         username: "",
       },
     });
-  const [dev1, setDev1] = useState<Dev | null>(null);
-  const [dev2, setDev2] = useState<Dev | null>(null);
 
   useEffect(() => {
     if (dev1Error || dev2Error)
@@ -86,7 +106,7 @@ export default function Arena() {
   useEffect(() => {
     if (dev1Health < 0 || dev2Health < 0) {
       showNotification("Someone won!", "SUCCESS");
-      setGameOn(false);
+      // setGameOn(false);
       setDev1Health(1000);
       setDev2Health(1000);
     }
@@ -156,7 +176,15 @@ export default function Arena() {
             <div className="relative">
               <div className="flex gap-4 justify-between mt-4 min-h-[500px] bg-secondary shadow-md rounded-md">
                 <div className="flex-1 p-4 flex flex-col justify-center">
-                  {dev1 && <DevBattleCard dev={dev1} health={dev1Health} />}
+                  {dev1 && (
+                    <DevBattleCard
+                      dev={dev1}
+                      health={dev1Health}
+                      moves={dev1Moves?.userMoves.moves.edges.map(
+                        (edge) => edge.node
+                      )}
+                    />
+                  )}
                 </div>
                 <div className="flex items-center justify-center relative">
                   <div className="absolute bg-primary bg-gradient-to-r from-primary via-blue-400 to-primary w-4 inset-y-0 left-1/2 -translate-x-1/2"></div>

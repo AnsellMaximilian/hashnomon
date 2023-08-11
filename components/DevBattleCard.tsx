@@ -3,15 +3,49 @@ import React, { useEffect, useState } from "react";
 import { motion, useAnimate } from "framer-motion";
 import Image from "next/image";
 import fallbackPicture from "@/assets/images/404.svg";
+import { Move } from "@/lib/services/moves";
 
 interface DevBattleCardProps {
   dev: Dev;
   health: number;
   side?: "RIGHT" | "LEFT";
+  moves?: Move[];
 }
+
+const statColorMap = {
+  STRENGTH: "bg-red-500",
+  DEFENSE: "bg-green-500",
+  SPEED: "bg-blue-500",
+};
+
+const MoveButton = ({ move }: { move: Move }) => {
+  return (
+    <button className="col-span-6 bg-white shadow-md p-4 hover:from-dark hover:to-dark hover:via-white rounded-md bg-gradient-to-b from-gray-100 via-white to-gray-100">
+      <div className="flex justify-end mb-2 gap-2">
+        <div className="p-1 bg-gray-600 text-white text-xs rounded-md">
+          {move.type.replace("_", " ")}
+        </div>
+        {move.type === "POWER_UP" && (
+          <div
+            className={`p-1 ${
+              statColorMap[move.targetStat]
+            } text-white text-xs rounded-md`}
+          >
+            {move.targetStat.replace("_", " ")}
+          </div>
+        )}
+      </div>
+      <div className="text-left">
+        <div className="font-semibold text-md">{move.name}</div>
+        <div>POWER: {move.power}</div>
+      </div>
+    </button>
+  );
+};
 
 export default function DevBattleCard({
   health,
+  moves,
   dev,
   side = "LEFT",
 }: DevBattleCardProps) {
@@ -38,7 +72,7 @@ export default function DevBattleCard({
   return (
     <motion.div
       ref={scope}
-      className="w-full"
+      className="w-full flex flex-col h-full"
       initial={{ opacity: 0, x: side === "RIGHT" ? 50 : -50 }}
       animate={{ opacity: 1, x: 0 }}
     >
@@ -86,6 +120,11 @@ export default function DevBattleCard({
         >
           @{dev.username}
         </h2>
+      </div>
+      <div className="grid grid-cols-12 gap-2 mt-4 grow">
+        {moves?.map((move) => (
+          <MoveButton key={move.id} move={move} />
+        ))}
       </div>
     </motion.div>
   );
