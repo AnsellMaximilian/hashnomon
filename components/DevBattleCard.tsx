@@ -41,7 +41,7 @@ const MoveButton = ({
         <div className="p-1 bg-gray-600 text-white text-xs rounded-md">
           {move.type.replace("_", " ")}
         </div>
-        {move.type === "POWER_UP" && (
+        {(move.type === "POWER_UP" || move.type === "VIRUS") && (
           <div
             className={`p-1 ${
               statColorMap[move.targetStat]

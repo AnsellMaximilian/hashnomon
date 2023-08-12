@@ -29,6 +29,7 @@ import {
 } from "@/lib/services/moves";
 import { generateUniqueRandomNumbers, wait } from "@/common/utils";
 import { calculateStatBoost } from "@/common/calculateStatBoost";
+import { calculateStatDrain } from "@/common/calculateStatDrain";
 
 export default function Arena() {
   const { showNotification } = useNotification();
@@ -177,6 +178,22 @@ export default function Arena() {
             }
             return prev;
           });
+        } else if (move.type === "VIRUS") {
+          setDev2((prev) => {
+            if (prev) {
+              const { newStats, newStatPoint } = calculateStatDrain({
+                move: move,
+                oldStats: prev.stats,
+              });
+              showNotification(
+                `You drained ${dev2.username}'s ${move.targetStat} by ${
+                  move.power
+                } to ${Math.round(newStatPoint)}`
+              );
+              return { ...prev, stats: newStats };
+            }
+            return prev;
+          });
         }
       }
     }
@@ -219,6 +236,22 @@ export default function Arena() {
                 } to ${Math.round(newStatPoint)}`
               );
 
+              return { ...prev, stats: newStats };
+            }
+            return prev;
+          });
+        } else if (move.type === "VIRUS") {
+          setDev1((prev) => {
+            if (prev) {
+              const { newStats, newStatPoint } = calculateStatDrain({
+                move: move,
+                oldStats: prev.stats,
+              });
+              showNotification(
+                `${dev2.username} drained your ${move.targetStat} by ${
+                  move.power
+                } to ${Math.round(newStatPoint)}`
+              );
               return { ...prev, stats: newStats };
             }
             return prev;

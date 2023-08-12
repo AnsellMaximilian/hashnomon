@@ -12,7 +12,6 @@ export function calculateDamage({
   defenderDefense,
 }: Params): number {
   if (attackerStrength <= 0) attackerStrength = 1;
-  let damage =
-    ((attackerStrength + 10) * move.power) / 3 - defenderDefense + 10;
+  let damage = (attackerStrength * move.power) / 2.5 - defenderDefense + 10;
   return Math.round(damage >= 0 ? damage : 1);
 }
