@@ -39,3 +39,32 @@ export const GetDevQuery = gql`
     }
   }
 `;
+
+export const GetUserDevsQuery = gql`
+  query UserDevs($userId: String!) {
+    userDevs(by: { userId: $userId }) {
+      userId
+      devs
+      id
+    }
+  }
+`;
+
+export type GetUserDevsQueryResult = {
+  userDevs: { userId: string; id: string; devs: string[] };
+};
+
+export const CreateUserDevsQuery = gql`
+  mutation UserDevsCreate($userId: String!, $firstDevId: String!) {
+    userDevsCreate(input: { userId: $userId, devs: [$firstDevId] }) {
+      userDevs {
+        userId
+        devs
+      }
+    }
+  }
+`;
+
+export type CreateUserDevsQueryResult = {
+  userDevs: { userId: string; id: string; devs: string[] };
+};

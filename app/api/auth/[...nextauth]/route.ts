@@ -3,6 +3,9 @@ import GitHubProvider from "next-auth/providers/github";
 import jsonwebtoken, { Jwt } from "jsonwebtoken";
 
 export const OPTIONS: NextAuthOptions = {
+  session: {
+    strategy: "jwt",
+  },
   providers: [
     GitHubProvider({
       clientId: process.env.GITHUB_CLIENT_ID!,
@@ -23,20 +26,25 @@ export const OPTIONS: NextAuthOptions = {
     decode: async ({ secret, token }) =>
       jsonwebtoken.verify(token!, secret) as Jwt,
   },
-  // callbacks: {
-  //   async jwt({ token, profile }) {
-  //     if (profile) {
-  //       token.username = profile?.login
-  //     }
-  //     return token
-  //   },
-  //   session({ session, token }) {
-  //     if (token.username) {
-  //       session.username = token?.username
-  //     }
-  //     return session
-  //   }
-  // }
+  callbacks: {
+    async jwt({ token, profile, user }) {
+      if (profile) {
+        if (user) {
+          token.email = user.email;
+          //@ts-ignore
+          token.uid = user.id;
+        }
+      }
+      return token;
+    },
+    session({ session, token }) {
+      if (token) {
+        // @ts-ignore
+        session.user.id = token.uid;
+      }
+      return session;
+    },
+  },
 };
 
 const handler = NextAuth(OPTIONS);

@@ -3,7 +3,13 @@
 import React, { useCallback, useEffect, useState } from "react";
 import DevCard from "@/components/DevCard";
 import DevSelect from "@/components/DevSelect";
-import { Dev, DevQueryResult, GetDevQuery } from "@/lib/services/devs";
+import {
+  Dev,
+  DevQueryResult,
+  GetDevQuery,
+  GetUserDevsQuery,
+  GetUserDevsQueryResult,
+} from "@/lib/services/devs";
 import Image from "next/image";
 import logo from "@/assets/images/logo.svg";
 import {
@@ -30,9 +36,13 @@ import {
 import { generateUniqueRandomNumbers, wait } from "@/common/utils";
 import { calculateStatBoost } from "@/common/calculateStatBoost";
 import { calculateStatDrain } from "@/common/calculateStatDrain";
+import { useSession } from "next-auth/react";
+import StarterDev from "./StarterDev";
+import UserDevsSelection from "./UserDevsSelection";
 
 export default function Arena() {
   const { showNotification } = useNotification();
+  const { data: session, status } = useSession();
 
   const [addNewUserMoves] = useMutation(CreateUserMovesQuery);
 
@@ -79,27 +89,39 @@ export default function Arena() {
       },
     });
 
-  const {
-    data: dev1Moves,
-    error: dev1MovesError,
-    loading: dev1MovesLoading,
-    refetch: refetchDev1Moves,
-  } = useQuery<GetUserMovesQueryResult>(GetUserMovesQuery, {
-    variables: {
-      userId: dev1?._id,
-    },
-    onCompleted: (data) => {
-      if (data.userMoves === null) {
-        getMoves({
-          onCompleted: async (data) => {
-            handleAddUserMoves(data, refetchDev1Moves, dev1?._id);
-          },
-        });
-      } else {
-      }
-    },
-    skip: !dev1,
-  });
+  const { data: dev1Moves, refetch: refetchDev1Moves } =
+    useQuery<GetUserMovesQueryResult>(GetUserMovesQuery, {
+      variables: {
+        userId: dev1?._id,
+      },
+      onCompleted: (data) => {
+        if (data.userMoves === null) {
+          getMoves({
+            onCompleted: async (data) => {
+              handleAddUserMoves(data, refetchDev1Moves, dev1?._id);
+            },
+          });
+        } else {
+        }
+      },
+      skip: !dev1,
+    });
+  const { data: dev1Devs } = useQuery<GetUserDevsQueryResult>(
+    GetUserDevsQuery,
+    {
+      variables: {
+        // @ts-ignore
+        userId: session?.user?.id,
+      },
+      onCompleted: (data) => {
+        console.log(data);
+        if (data.userDevs === null) {
+        } else {
+        }
+      },
+      skip: !session?.user,
+    }
+  );
 
   const [getDev2, { loading: dev2Loading, error: dev2Error, data: dev2Data }] =
     useLazyQuery<DevQueryResult>(GetDevQuery, {
@@ -108,27 +130,23 @@ export default function Arena() {
       },
     });
 
-  const {
-    data: dev2Moves,
-    error: dev2MovesError,
-    loading: dev2MovesLoading,
-    refetch: refetchDev2Moves,
-  } = useQuery<GetUserMovesQueryResult>(GetUserMovesQuery, {
-    variables: {
-      userId: dev2?._id,
-    },
-    onCompleted: (data) => {
-      if (data.userMoves === null) {
-        getMoves({
-          onCompleted: async (data) => {
-            handleAddUserMoves(data, refetchDev2Moves, dev2?._id);
-          },
-        });
-      } else {
-      }
-    },
-    skip: !dev2,
-  });
+  const { data: dev2Moves, refetch: refetchDev2Moves } =
+    useQuery<GetUserMovesQueryResult>(GetUserMovesQuery, {
+      variables: {
+        userId: dev2?._id,
+      },
+      onCompleted: (data) => {
+        if (data.userMoves === null) {
+          getMoves({
+            onCompleted: async (data) => {
+              handleAddUserMoves(data, refetchDev2Moves, dev2?._id);
+            },
+          });
+        } else {
+        }
+      },
+      skip: !dev2,
+    });
 
   useEffect(() => {
     if (dev1Error || dev2Error)
@@ -138,6 +156,7 @@ export default function Arena() {
 
   // GAME STATES
   const [gameOn, setGameOn] = useState(false);
+  const [gameOver, setGameOver] = useState(true);
   const [dev1Health, setDev1Health] = useState(1000);
   const [dev2Health, setDev2Health] = useState(1000);
 
@@ -146,6 +165,7 @@ export default function Arena() {
   // Playing the game
 
   const doMove = async ({ moveId }: { moveId: string }) => {
+    let continueNextTurn = true;
     if (dev1 && dev1Moves?.userMoves.moves.edges && gameOn && dev2) {
       const moveEdge = dev1Moves.userMoves.moves.edges.find(
         (edge) => edge.node.id === moveId
@@ -160,7 +180,9 @@ export default function Arena() {
               defenderDefense: dev2.stats.defense,
             });
             showNotification(`You attacked for ${damage} damage`);
-            return prev - damage;
+            const remainingHealth = prev - damage;
+            if (remainingHealth <= 0) continueNextTurn = false;
+            return remainingHealth;
           });
         } else if (move.type === "POWER_UP") {
           setDev1((prev) => {
@@ -199,7 +221,7 @@ export default function Arena() {
     }
     setTurn(2);
     await wait(5000);
-    computerMove();
+    if (continueNextTurn) computerMove();
   };
 
   const computerMove = () => {
@@ -265,13 +287,12 @@ export default function Arena() {
   useEffect(() => {
     if (dev1Health < 0 || dev2Health < 0) {
       showNotification("Someone won!", "SUCCESS");
-      // setGameOn(false);
-      setDev1Health(1000);
-      setDev2Health(1000);
+      setGameOver(true);
+      // setDev1Health(1000);
+      // setDev2Health(1000);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dev1Health, dev2Health]);
-
   return (
     <main className="h-screen p-4 bg-gray-50 overflow-x-hidden">
       <AnimatePresence>
@@ -282,13 +303,23 @@ export default function Arena() {
             </h1>
             <div className="relative">
               <div className="flex gap-4 justify-between mt-4 min-h-[500px] bg-secondary shadow-md rounded-md">
-                <DevSelect
+                {/* <DevSelect
                   number={1}
                   getDev={getDev1}
                   dev={dev1}
                   loading={dev1Loading}
                   setDev={setDev1}
-                />
+                /> */}
+
+                {dev1Devs?.userDevs ? (
+                  <UserDevsSelection
+                    devUsernames={dev1Devs.userDevs.devs}
+                    setUserDev={setDev1}
+                    dev={dev1}
+                  />
+                ) : (
+                  <StarterDev />
+                )}
                 <div className="flex items-center justify-center relative">
                   <div className="absolute bg-primary bg-gradient-to-r from-primary via-blue-400 to-primary w-4 inset-y-0 left-1/2 -translate-x-1/2"></div>
                   <motion.div
@@ -315,7 +346,10 @@ export default function Arena() {
               {dev1 && dev2 && (
                 <div className="mt-4 flex justify-center">
                   <button
-                    onClick={() => setGameOn(true)}
+                    onClick={() => {
+                      setGameOn(true);
+                      setGameOver(false);
+                    }}
                     className="px-8 py-6 text-3xl rounded-full shadow-lg text-white bg-primary font-bold hover:opacity-90 flex gap-6 justify-between items-center"
                   >
                     <KeyboardIcon /> <span>FIGHT</span> <CommandLineIcon />
@@ -375,6 +409,17 @@ export default function Arena() {
             {/* <div className="p-4 bg-dark mt-4 rounded-md min-h-[5rem]">
               {message}
             </div> */}
+            {gameOver && dev2Health <= 0 && (
+              <div className="mt-4 flex justify-center items-center gap-4">
+                <div className="text-primary font-bold">
+                  You&apos;ve outsmarted @{dev2?.username}. Would you like to
+                  &quot;negotiate a contract&quot; with them?
+                </div>
+                <button className="px-6 py-3 text-3xl rounded-full shadow-lg text-white bg-primary font-bold hover:opacity-90 flex gap-6 justify-between items-center">
+                  <span className="font-bold text-xl">Yes</span>
+                </button>
+              </div>
+            )}
           </div>
         )}
       </AnimatePresence>

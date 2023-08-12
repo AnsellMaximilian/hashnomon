@@ -12,6 +12,7 @@ interface DevBattleCardProps {
   moves?: Move[];
   doMove?: ({ moveId }: { moveId: string }) => void;
   onTurn?: boolean;
+  isComputer?: boolean;
 }
 
 const statColorMap = {
@@ -66,6 +67,7 @@ export default function DevBattleCard({
   doMove,
   onTurn = false,
   side = "LEFT",
+  isComputer = false,
 }: DevBattleCardProps) {
   const [devPhoto, setDevPhoto] = useState(fallbackPicture);
   const [scope, animate] = useAnimate();

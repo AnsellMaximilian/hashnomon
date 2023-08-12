@@ -29,6 +29,11 @@ const userMoves = g.model("UserMoves", {
   moves: g.relation(move).list(),
 });
 
+g.model("UserDevs", {
+  userId: g.string().unique(),
+  devs: g.string().list(),
+});
+
 g.extend("HashnodeUser", {
   stats: {
     args: { myArg: g.string().optional() },
