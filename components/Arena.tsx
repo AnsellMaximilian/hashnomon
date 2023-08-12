@@ -28,6 +28,7 @@ import {
   GetUserMovesQueryResult,
 } from "@/lib/services/moves";
 import { generateUniqueRandomNumbers, wait } from "@/common/utils";
+import { calculateStatBoost } from "@/common/calculateStatBoost";
 
 export default function Arena() {
   const { showNotification } = useNotification();
@@ -157,20 +158,22 @@ export default function Arena() {
               attackerStrength: dev1.stats.strength,
               defenderDefense: dev2.stats.defense,
             });
+            showNotification(`You attacked for ${damage} damage`);
             return prev - damage;
           });
         } else if (move.type === "POWER_UP") {
           setDev1((prev) => {
             if (prev) {
-              const stats = { ...prev.stats };
-              if (move.targetStat === "STRENGTH") {
-                stats.strength = stats.strength + move.power;
-              } else if (move.targetStat === "DEFENSE") {
-                stats.defense = stats.defense + move.power;
-              } else if (move.targetStat === "SPEED") {
-                stats.speed = stats.speed + move.power;
-              }
-              return { ...prev, stats };
+              const { newStats, newStatPoint } = calculateStatBoost({
+                move: move,
+                oldStats: prev.stats,
+              });
+              showNotification(
+                `You raised your ${move.targetStat} by ${
+                  move.power
+                } to ${Math.round(newStatPoint)}`
+              );
+              return { ...prev, stats: newStats };
             }
             return prev;
           });
@@ -178,7 +181,7 @@ export default function Arena() {
       }
     }
     setTurn(2);
-    await wait(3000);
+    await wait(5000);
     computerMove();
   };
 
@@ -197,7 +200,28 @@ export default function Arena() {
               attackerStrength: dev2.stats.strength,
               defenderDefense: dev1.stats.defense,
             });
+            showNotification(
+              `${dev2.username} attacked you for ${damage} damage`
+            );
+
             return prev - damage;
+          });
+        } else if (move.type === "POWER_UP") {
+          setDev2((prev) => {
+            if (prev) {
+              const { newStats, newStatPoint } = calculateStatBoost({
+                move: move,
+                oldStats: prev.stats,
+              });
+              showNotification(
+                `${dev2.username} raised their ${move.targetStat} by ${
+                  move.power
+                } to ${Math.round(newStatPoint)}`
+              );
+
+              return { ...prev, stats: newStats };
+            }
+            return prev;
           });
         }
       }
@@ -315,6 +339,9 @@ export default function Arena() {
                 </div>
               </div>
             </div>
+            {/* <div className="p-4 bg-dark mt-4 rounded-md min-h-[5rem]">
+              {message}
+            </div> */}
           </div>
         )}
       </AnimatePresence>
