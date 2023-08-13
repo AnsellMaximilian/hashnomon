@@ -120,7 +120,6 @@ export default function Arena() {
       userId: session?.user?.id,
     },
     onCompleted: (data) => {
-      console.log(data);
       if (data.userDevs === null) {
       } else {
       }
@@ -165,6 +164,7 @@ export default function Arena() {
   const [dev1Health, setDev1Health] = useState(1000);
   const [dev2Health, setDev2Health] = useState(1000);
   const [isCapturing, setIsCapturing] = useState(false);
+  const [hasAttemptedCapture, setHasAttemptedCapture] = useState(false);
 
   const [turn, setTurn] = useState<1 | 2>(1);
 
@@ -435,60 +435,65 @@ export default function Arena() {
                 </div>
               </div>
             </div>
-            {/* <div className="p-4 bg-dark mt-4 rounded-md min-h-[5rem]">
-              {message}
-            </div> */}
-            {gameOver && dev2Health <= 0 && (
-              <div className="mt-4 flex justify-center items-center gap-4">
-                <div className="text-primary font-bold">
-                  You&apos;ve outsmarted @{dev2?.username}. Would you like to
-                  &quot;negotiate a contract&quot; with them?
-                </div>
-                <button
-                  onClick={async () => {
-                    if (dev1Devs && dev2) {
-                      if (dev1Devs.userDevs.devs.includes(dev2.username)) {
-                        showNotification(
-                          `@${dev2?.username} is already working in your team.`,
-                          "ERROR"
-                        );
-                      } else {
-                        showNotification(
-                          `Negotiating a deal with @${dev2?.username}...`
-                        );
-                        setIsCapturing(true);
-                        await wait(6500);
-                        const captured = rollChance(10);
-                        if (captured) {
-                          await updateUserDevs({
-                            variables: {
-                              // @ts-ignore
-                              userId: session?.user.id as string,
-                              devs: [...dev1Devs.userDevs.devs, dev2.username],
-                            },
-                          });
+            {gameOver &&
+              dev2Health <= 0 &&
+              !isCapturing &&
+              !hasAttemptedCapture && (
+                <div className="mt-4 flex justify-center items-center gap-4">
+                  <div className="text-primary font-bold">
+                    You&apos;ve outsmarted @{dev2?.username}. Would you like to
+                    &quot;negotiate a contract&quot; with them?
+                  </div>
+                  <button
+                    onClick={async () => {
+                      if (dev1Devs && dev2) {
+                        if (dev1Devs.userDevs.devs.includes(dev2.username)) {
                           showNotification(
-                            `You've successfully hired @${dev2?.username} into your team!`,
-                            "SUCCESS"
+                            `@${dev2?.username} is already working in your team.`,
+                            "ERROR"
                           );
                         } else {
                           showNotification(
-                            `@${dev2?.username} denied your request to join your team!`,
-                            "ERROR"
+                            `Negotiating a deal with @${dev2?.username}...`
                           );
+                          setHasAttemptedCapture(true);
+                          setIsCapturing(true);
+                          await wait(6500);
+                          const captured = rollChance(25);
+                          if (captured) {
+                            await updateUserDevs({
+                              variables: {
+                                // @ts-ignore
+                                userId: session?.user.id as string,
+                                devs: [
+                                  ...dev1Devs.userDevs.devs,
+                                  dev2.username,
+                                ],
+                              },
+                            });
+                            showNotification(
+                              `You've successfully hired @${dev2?.username} into your team!`,
+                              "SUCCESS"
+                            );
+                          } else {
+                            showNotification(
+                              `@${dev2?.username} denied your request to join your team!`,
+                              "ERROR"
+                            );
+                          }
+                          setIsCapturing(false);
+                          await wait(3000);
+                          setHasAttemptedCapture(false);
+                          resetGame();
                         }
-                        setIsCapturing(false);
-                        await wait(3000);
-                        resetGame();
                       }
-                    }
-                  }}
-                  className="px-6 py-3 text-3xl rounded-md shadow-lg text-white bg-primary font-bold hover:opacity-90 flex gap-6 justify-between items-center"
-                >
-                  <span className="font-bold text-xl">Yes</span>
-                </button>
-              </div>
-            )}
+                    }}
+                    className="px-6 py-3 text-3xl rounded-md shadow-lg text-white bg-primary font-bold hover:opacity-90 flex gap-6 justify-between items-center"
+                  >
+                    <span className="font-bold text-xl">Yes</span>
+                  </button>
+                </div>
+              )}
           </div>
         )}
       </AnimatePresence>
