@@ -35,12 +35,12 @@ export default function UserDevsSelection({
           </div>
         </>
       ) : (
-        <div className="flex flex-col gap-4 justify-center items-center flex-1 overflow-y-auto">
+        <div className="flex flex-col gap-4 justify-center items-center flex-1">
           <div className="font-bold text-lg flex gap-2 items-center">
             <span>Choose your Dev</span>
             {loading && <LoadIcon className="animate-spin" />}
           </div>
-          <ul className="flex flex-col gap-2 w-full">
+          <ul className="flex flex-col gap-2 w-full max-h-[25rem] overflow-y-auto">
             {devUsernames.map((username) => (
               <li key={username}>
                 <button
