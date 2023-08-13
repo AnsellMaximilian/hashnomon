@@ -110,20 +110,23 @@ export default function Arena() {
       },
       skip: !dev1,
     });
-  const { data: dev1Devs, loading: dev1DevsLoading } =
-    useQuery<GetUserDevsQueryResult>(GetUserDevsQuery, {
-      variables: {
-        // @ts-ignore
-        userId: session?.user?.id,
-      },
-      onCompleted: (data) => {
-        console.log(data);
-        if (data.userDevs === null) {
-        } else {
-        }
-      },
-      skip: !session?.user,
-    });
+  const {
+    data: dev1Devs,
+    loading: dev1DevsLoading,
+    refetch: refetchDev1Devs,
+  } = useQuery<GetUserDevsQueryResult>(GetUserDevsQuery, {
+    variables: {
+      // @ts-ignore
+      userId: session?.user?.id,
+    },
+    onCompleted: (data) => {
+      console.log(data);
+      if (data.userDevs === null) {
+      } else {
+      }
+    },
+    skip: !session?.user,
+  });
 
   const [getDev2, { loading: dev2Loading, error: dev2Error, data: dev2Data }] =
     useLazyQuery<DevQueryResult>(GetDevQuery, {
@@ -342,7 +345,7 @@ export default function Arena() {
                     <LoadIcon className="animate-spin text-5xl text-primary" />
                   </div>
                 ) : (
-                  <StarterDev />
+                  <StarterDev refetchDevs={refetchDev1Devs} />
                 )}
                 <div className="flex items-center justify-center relative">
                   <div className="absolute bg-primary bg-gradient-to-r from-primary via-blue-400 to-primary w-4 inset-y-0 left-1/2 -translate-x-1/2"></div>

@@ -3,6 +3,7 @@ import DevCard from "./DevCard";
 import { AiOutlineLoading3Quarters as LoadIcon } from "react-icons/ai";
 import { motion } from "framer-motion";
 import {
+  ApolloQueryResult,
   LazyQueryExecFunction,
   OperationVariables,
   useLazyQuery,
@@ -13,12 +14,19 @@ import {
   Dev,
   DevQueryResult,
   GetDevQuery,
+  GetUserDevsQueryResult,
 } from "@/lib/services/devs";
 import { useSession } from "next-auth/react";
 
 import { useNotification } from "@/contexts/Notifications";
 
-export default function StarterDev({}: {}) {
+export default function StarterDev({
+  refetchDevs,
+}: {
+  refetchDevs: (
+    variables?: Partial<OperationVariables> | undefined
+  ) => Promise<ApolloQueryResult<GetUserDevsQueryResult>>;
+}) {
   const { showNotification } = useNotification();
   const [searchValue, setSearchValue] = useState("");
   const [dev, setDev] = useState<Dev | null>(null);
@@ -59,7 +67,14 @@ export default function StarterDev({}: {}) {
                       // @ts-ignore
                       userId: session?.user.id as string,
                     },
-                    onCompleted: (data) => console.log(data),
+                    onCompleted: (data) => {
+                      refetchDevs({
+                        variables: {
+                          // @ts-ignore
+                          userId: session?.user?.id,
+                        },
+                      });
+                    },
                   });
                 }}
               >
