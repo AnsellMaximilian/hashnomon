@@ -35,7 +35,7 @@ export default function UserDevsSelection({
           </div>
         </>
       ) : (
-        <div className="flex flex-col gap-4 justify-center items-center flex-1">
+        <div className="flex flex-col gap-4 justify-center items-center flex-1 overflow-y-auto">
           <div className="font-bold text-lg flex gap-2 items-center">
             <span>Choose your Dev</span>
             {loading && <LoadIcon className="animate-spin" />}
@@ -53,7 +53,7 @@ export default function UserDevsSelection({
                   }}
                   className="bg-light px-4 py-2 shadow-md w-full hover:bg-primary hover:text-white font-bold rounded-md text-primary"
                 >
-                  {username}
+                  @{username}
                 </button>
               </li>
             ))}

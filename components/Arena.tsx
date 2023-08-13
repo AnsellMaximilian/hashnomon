@@ -19,6 +19,8 @@ import {
   useMutation,
   useQuery,
 } from "@apollo/client";
+import { AiOutlineLoading3Quarters as LoadIcon } from "react-icons/ai";
+
 import { useNotification } from "@/contexts/Notifications";
 import { BsFillKeyboardFill as KeyboardIcon } from "react-icons/bs";
 import { HiCommandLine as CommandLineIcon } from "react-icons/hi2";
@@ -106,9 +108,8 @@ export default function Arena() {
       },
       skip: !dev1,
     });
-  const { data: dev1Devs } = useQuery<GetUserDevsQueryResult>(
-    GetUserDevsQuery,
-    {
+  const { data: dev1Devs, loading: dev1DevsLoading } =
+    useQuery<GetUserDevsQueryResult>(GetUserDevsQuery, {
       variables: {
         // @ts-ignore
         userId: session?.user?.id,
@@ -120,8 +121,7 @@ export default function Arena() {
         }
       },
       skip: !session?.user,
-    }
-  );
+    });
 
   const [getDev2, { loading: dev2Loading, error: dev2Error, data: dev2Data }] =
     useLazyQuery<DevQueryResult>(GetDevQuery, {
@@ -317,6 +317,10 @@ export default function Arena() {
                     setUserDev={setDev1}
                     dev={dev1}
                   />
+                ) : dev1DevsLoading ? (
+                  <div className="flex-1 p-4 flex flex-col items-center justify-center">
+                    <LoadIcon className="animate-spin text-5xl text-primary" />
+                  </div>
                 ) : (
                   <StarterDev />
                 )}
