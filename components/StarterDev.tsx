@@ -96,6 +96,8 @@ export default function StarterDev({}: {}) {
                     onCompleted: (data: DevQueryResult) => {
                       setDev(data.hashnode.user);
                     },
+                    onError: () =>
+                      showNotification("No Dev with that username", "ERROR"),
                   });
                 }
               }}
