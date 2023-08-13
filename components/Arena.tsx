@@ -169,7 +169,6 @@ export default function Arena() {
   const [turn, setTurn] = useState<1 | 2>(1);
 
   // Playing the game
-
   const doMove = async ({ moveId }: { moveId: string }) => {
     let continueNextTurn = true;
     if (dev1 && dev1Moves?.userMoves.moves.edges && gameOn && dev2) {
@@ -326,14 +325,6 @@ export default function Arena() {
             </h1>
             <div className="relative">
               <div className="flex gap-4 justify-between mt-4 min-h-[500px] bg-secondary shadow-md rounded-md">
-                {/* <DevSelect
-                  number={1}
-                  getDev={getDev1}
-                  dev={dev1}
-                  loading={dev1Loading}
-                  setDev={setDev1}
-                /> */}
-
                 {dev1Devs?.userDevs ? (
                   <UserDevsSelection
                     devUsernames={dev1Devs.userDevs.devs}
@@ -444,54 +435,62 @@ export default function Arena() {
                     You&apos;ve outsmarted @{dev2?.username}. Would you like to
                     &quot;negotiate a contract&quot; with them?
                   </div>
-                  <button
-                    onClick={async () => {
-                      if (dev1Devs && dev2) {
-                        if (dev1Devs.userDevs.devs.includes(dev2.username)) {
-                          showNotification(
-                            `@${dev2?.username} is already working in your team.`,
-                            "ERROR"
-                          );
-                        } else {
-                          showNotification(
-                            `Negotiating a deal with @${dev2?.username}...`
-                          );
-                          setHasAttemptedCapture(true);
-                          setIsCapturing(true);
-                          await wait(6500);
-                          const captured = rollChance(25);
-                          if (captured) {
-                            await updateUserDevs({
-                              variables: {
-                                // @ts-ignore
-                                userId: session?.user.id as string,
-                                devs: [
-                                  ...dev1Devs.userDevs.devs,
-                                  dev2.username,
-                                ],
-                              },
-                            });
+                  <div className="flex gap-4">
+                    <button
+                      onClick={async () => {
+                        if (dev1Devs && dev2) {
+                          if (dev1Devs.userDevs.devs.includes(dev2.username)) {
                             showNotification(
-                              `You've successfully hired @${dev2?.username} into your team!`,
-                              "SUCCESS"
+                              `@${dev2?.username} is already working in your team.`,
+                              "ERROR"
                             );
                           } else {
                             showNotification(
-                              `@${dev2?.username} denied your request to join your team!`,
-                              "ERROR"
+                              `Negotiating a deal with @${dev2?.username}...`
                             );
+                            setHasAttemptedCapture(true);
+                            setIsCapturing(true);
+                            await wait(6500);
+                            const captured = rollChance(25);
+                            if (captured) {
+                              await updateUserDevs({
+                                variables: {
+                                  // @ts-ignore
+                                  userId: session?.user.id as string,
+                                  devs: [
+                                    ...dev1Devs.userDevs.devs,
+                                    dev2.username,
+                                  ],
+                                },
+                              });
+                              showNotification(
+                                `You've successfully hired @${dev2?.username} into your team!`,
+                                "SUCCESS"
+                              );
+                            } else {
+                              showNotification(
+                                `@${dev2?.username} denied your request to join your team!`,
+                                "ERROR"
+                              );
+                            }
+                            setIsCapturing(false);
+                            await wait(3000);
+                            setHasAttemptedCapture(false);
+                            resetGame();
                           }
-                          setIsCapturing(false);
-                          await wait(3000);
-                          setHasAttemptedCapture(false);
-                          resetGame();
                         }
-                      }
-                    }}
-                    className="px-6 py-3 text-3xl rounded-md shadow-lg text-white bg-primary font-bold hover:opacity-90 flex gap-6 justify-between items-center"
-                  >
-                    <span className="font-bold text-xl">Yes</span>
-                  </button>
+                      }}
+                      className="px-6 py-3 text-xl rounded-md shadow-lg text-white bg-primary font-bold hover:opacity-90"
+                    >
+                      <span className="font-bold">Yes</span>
+                    </button>
+                    <button
+                      onClick={() => resetGame()}
+                      className="px-6 py-3 text-xl rounded-md shadow-lg text-primary border-2 border-primary font-bold hover:bg-dark"
+                    >
+                      No
+                    </button>
+                  </div>
                 </div>
               )}
           </div>
