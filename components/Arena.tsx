@@ -9,6 +9,7 @@ import {
   GetDevQuery,
   GetUserDevsQuery,
   GetUserDevsQueryResult,
+  UpdateUserDevsQuery,
 } from "@/lib/services/devs";
 import Image from "next/image";
 import logo from "@/assets/images/logo.svg";
@@ -35,7 +36,7 @@ import {
   GetUserMovesQuery,
   GetUserMovesQueryResult,
 } from "@/lib/services/moves";
-import { generateUniqueRandomNumbers, wait } from "@/common/utils";
+import { generateUniqueRandomNumbers, rollChance, wait } from "@/common/utils";
 import { calculateStatBoost } from "@/common/calculateStatBoost";
 import { calculateStatDrain } from "@/common/calculateStatDrain";
 import { useSession } from "next-auth/react";
@@ -47,6 +48,7 @@ export default function Arena() {
   const { data: session, status } = useSession();
 
   const [addNewUserMoves] = useMutation(CreateUserMovesQuery);
+  const [updateUserDevs] = useMutation(UpdateUserDevsQuery);
 
   const handleAddUserMoves = useCallback(
     async (
@@ -159,6 +161,7 @@ export default function Arena() {
   const [gameOver, setGameOver] = useState(true);
   const [dev1Health, setDev1Health] = useState(1000);
   const [dev2Health, setDev2Health] = useState(1000);
+  const [isCapturing, setIsCapturing] = useState(false);
 
   const [turn, setTurn] = useState<1 | 2>(1);
 
@@ -240,7 +243,7 @@ export default function Arena() {
               defenderDefense: dev1.stats.defense,
             });
             showNotification(
-              `${dev2.username} attacked you for ${damage} damage`
+              `${dev2.username} attacked you with ${move.name} for ${damage} damage`
             );
 
             return prev - damage;
@@ -284,13 +287,30 @@ export default function Arena() {
     setTurn(1);
   };
 
+  const resetGame = () => {
+    setGameOn(false);
+    setDev1Health(1000);
+    setDev2Health(1000);
+    setTurn(1);
+    setDev1(null);
+    setDev2(null);
+  };
+
   useEffect(() => {
-    if (dev1Health < 0 || dev2Health < 0) {
-      showNotification("Someone won!", "SUCCESS");
-      setGameOver(true);
-      // setDev1Health(1000);
-      // setDev2Health(1000);
-    }
+    (async () => {
+      if (dev1Health < 0 || dev2Health < 0) {
+        const playerWin = dev2Health < 0;
+        setGameOver(true);
+        if (!playerWin) await wait(4500);
+        showNotification(
+          playerWin
+            ? `You won! You can try to "hire" @${dev2?.username}.`
+            : "You lost!",
+          playerWin ? "SUCCESS" : "ERROR"
+        );
+        if (!playerWin) resetGame();
+      }
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dev1Health, dev2Health]);
   return (
@@ -381,7 +401,7 @@ export default function Arena() {
                         (edge) => edge.node
                       )}
                       doMove={doMove}
-                      onTurn={turn === 1}
+                      onTurn={turn === 1 && !gameOver}
                     />
                   )}
                 </div>
@@ -399,12 +419,14 @@ export default function Arena() {
                   {dev2 && (
                     <DevBattleCard
                       dev={dev2}
+                      isComputer
                       health={dev2Health}
                       side="RIGHT"
                       moves={dev2Moves?.userMoves.moves.edges.map(
                         (edge) => edge.node
                       )}
-                      onTurn={turn === 2}
+                      onTurn={turn === 2 && !gameOver}
+                      isCapturing={isCapturing}
                     />
                   )}
                 </div>
@@ -419,7 +441,47 @@ export default function Arena() {
                   You&apos;ve outsmarted @{dev2?.username}. Would you like to
                   &quot;negotiate a contract&quot; with them?
                 </div>
-                <button className="px-6 py-3 text-3xl rounded-full shadow-lg text-white bg-primary font-bold hover:opacity-90 flex gap-6 justify-between items-center">
+                <button
+                  onClick={async () => {
+                    if (dev1Devs && dev2) {
+                      if (dev1Devs.userDevs.devs.includes(dev2.username)) {
+                        showNotification(
+                          `@${dev2?.username} is already working in your team.`,
+                          "ERROR"
+                        );
+                      } else {
+                        showNotification(
+                          `Negotiating a deal with @${dev2?.username}...`
+                        );
+                        setIsCapturing(true);
+                        await wait(6500);
+                        const captured = rollChance(10);
+                        if (captured) {
+                          await updateUserDevs({
+                            variables: {
+                              // @ts-ignore
+                              userId: session?.user.id as string,
+                              devs: [...dev1Devs.userDevs.devs, dev2.username],
+                            },
+                          });
+                          showNotification(
+                            `You've successfully hired @${dev2?.username} into your team!`,
+                            "SUCCESS"
+                          );
+                        } else {
+                          showNotification(
+                            `@${dev2?.username} denied your request to join your team!`,
+                            "ERROR"
+                          );
+                        }
+                        setIsCapturing(false);
+                        await wait(3000);
+                        resetGame();
+                      }
+                    }
+                  }}
+                  className="px-6 py-3 text-3xl rounded-md shadow-lg text-white bg-primary font-bold hover:opacity-90 flex gap-6 justify-between items-center"
+                >
                   <span className="font-bold text-xl">Yes</span>
                 </button>
               </div>

@@ -18,3 +18,13 @@ export function wait(ms: number) {
     setTimeout(resolve, ms);
   });
 }
+
+export function rollChance(percentage: number) {
+  if (percentage < 0 || percentage > 100) {
+    throw new Error("Percentage must be a number between 0 and 100.");
+  }
+
+  const randomValue = Math.random() * 100;
+
+  return randomValue <= percentage;
+}

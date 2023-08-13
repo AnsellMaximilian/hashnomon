@@ -68,3 +68,19 @@ export const CreateUserDevsQuery = gql`
 export type CreateUserDevsQueryResult = {
   userDevs: { userId: string; id: string; devs: string[] };
 };
+
+export const UpdateUserDevsQuery = gql`
+  mutation UserDevsUpdate($userId: String!, $devs: [String!]) {
+    userDevsUpdate(by: { userId: $userId }, input: { devs: $devs }) {
+      userDevs {
+        devs
+        userId
+        id
+      }
+    }
+  }
+`;
+
+export type UpdateUserDevsQueryResult = {
+  userDevs: { userId: string; id: string; devs: string[] };
+};

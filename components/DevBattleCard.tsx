@@ -1,9 +1,11 @@
 import { Dev } from "@/lib/services/devs";
 import React, { useEffect, useState } from "react";
-import { motion, useAnimate } from "framer-motion";
+import { AnimatePresence, motion, useAnimate } from "framer-motion";
 import Image from "next/image";
 import fallbackPicture from "@/assets/images/404.svg";
 import { Move } from "@/lib/services/moves";
+import ballBottom from "@/assets/images/hashnoball-bottom.svg";
+import ballTop from "@/assets/images/hashnoball-top.svg";
 
 interface DevBattleCardProps {
   dev: Dev;
@@ -13,6 +15,7 @@ interface DevBattleCardProps {
   doMove?: ({ moveId }: { moveId: string }) => void;
   onTurn?: boolean;
   isComputer?: boolean;
+  isCapturing?: boolean;
 }
 
 const statColorMap = {
@@ -68,6 +71,7 @@ export default function DevBattleCard({
   onTurn = false,
   side = "LEFT",
   isComputer = false,
+  isCapturing = false,
 }: DevBattleCardProps) {
   const [devPhoto, setDevPhoto] = useState(fallbackPicture);
   const [scope, animate] = useAnimate();
@@ -97,21 +101,61 @@ export default function DevBattleCard({
       animate={{ opacity: 1, x: 0 }}
     >
       <div className="flex gap-4 items-center">
-        <div
-          className={`rounded-full border-4 border-primary overflow-hidden shadow-lg ${
-            side === "RIGHT" ? "order-2" : ""
+        <motion.div
+          className={`relative ${side === "RIGHT" ? "order-2" : ""} ${
+            isCapturing ? "" : ""
           }`}
         >
+          <AnimatePresence>
+            {isComputer && isCapturing && (
+              <motion.div
+                className="absolute inset-0 "
+                animate={{ rotate: isCapturing ? 360 : 0 }}
+                transition={{ delay: 1.5, duration: 5 }}
+              >
+                <motion.div
+                  className="absolute inset-x-0 top-0"
+                  initial={{ y: -50 }}
+                  animate={{ y: 0 }}
+                  exit={{ y: -50 }}
+                  transition={{ delay: 1 }}
+                >
+                  <Image
+                    src={ballTop}
+                    width={130}
+                    height={130}
+                    alt="Ball top"
+                    className="w-full"
+                  />
+                </motion.div>
+                <motion.div
+                  className="absolute inset-x-0 bottom-0"
+                  initial={{ y: 50 }}
+                  animate={{ y: 0 }}
+                  exit={{ y: 50 }}
+                  transition={{ delay: 1 }}
+                >
+                  <Image
+                    src={ballBottom}
+                    width={130}
+                    height={130}
+                    alt="Ball bottom"
+                    className="w-full"
+                  />
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
           <Image
             src={devPhoto}
-            width={125}
-            height={125}
+            width={130}
+            height={130}
             alt="Dev Photo"
-            className="aspect-square object-cover"
+            className="aspect-square object-cover rounded-full border-4 border-primary shadow-lg"
             placeholder={fallbackPicture}
             onError={() => setDevPhoto(fallbackPicture)}
           />
-        </div>
+        </motion.div>
         <div className="flex flex-col gap-2 flex-grow">
           <div className="relative p-2 bg-gray-400 bg-gradient-to-b from-gray-400 via-gray-300 to-gray-400">
             <motion.div
