@@ -85,6 +85,7 @@ export default function Navigation() {
           label="Hashnodex"
           icon={hashnodex}
           description="Just dex"
+          href="/hashnodex"
         />
       </ul>
     </nav>
