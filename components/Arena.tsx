@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import DevCard from "@/components/DevCard";
 import DevSelect from "@/components/DevSelect";
+import { BsArrowLeftCircleFill as ArrowLeft } from "react-icons/bs";
+
 import {
   Dev,
   DevQueryResult,
@@ -42,6 +43,7 @@ import { calculateStatDrain } from "@/common/calculateStatDrain";
 import { useSession } from "next-auth/react";
 import StarterDev from "./StarterDev";
 import UserDevsSelection from "./UserDevsSelection";
+import Link from "next/link";
 
 export default function Arena() {
   const { showNotification } = useNotification();
@@ -320,9 +322,14 @@ export default function Arena() {
       <AnimatePresence>
         {!gameOn && (
           <div>
-            <h1 className="text-5xl font-bold italic text-center text-primary">
-              Choose Your Dev!
-            </h1>
+            <header className="flex justify-center gap-4 items-center">
+              <Link href="/" className="hover:opacity-90">
+                <ArrowLeft className="text-3xl text-primary" />
+              </Link>
+              <h1 className="text-5xl font-bold text-center text-primary">
+                Dev Arena
+              </h1>
+            </header>
             <div className="relative">
               <div className="flex gap-4 justify-between mt-4 min-h-[500px] bg-secondary shadow-md rounded-md">
                 {dev1Devs?.userDevs ? (
@@ -381,7 +388,7 @@ export default function Arena() {
       <AnimatePresence>
         {gameOn && (
           <div>
-            <h1 className="text-5xl font-bold italic text-center text-primary">
+            <h1 className="text-5xl font-bold text-center text-primary">
               A Battle Commences!
             </h1>
             <div className="relative">

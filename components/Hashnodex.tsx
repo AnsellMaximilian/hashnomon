@@ -14,6 +14,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
+import { BsArrowLeftCircleFill as ArrowLeft } from "react-icons/bs";
 
 const orbFont = Orbitron({ subsets: ["latin"] });
 
@@ -50,6 +51,12 @@ export default function Hashnodex() {
     <main
       className={`p-4 bg-gray-50 overflow-x-hidden min-h-screen flex flex-col ${orbFont.className}`}
     >
+      <header className="mb-4 flex items-center gap-4">
+        <Link href="/" className="hover:opacity-90">
+          <ArrowLeft className="text-3xl text-primary" />
+        </Link>
+        <h1 className="text-2xl text-primary font-bold">Your Hashnodex</h1>
+      </header>
       <div className="grid grid-cols-12 gap-4 bg-primary p-4 rounded-md flex-1 shadow-lg">
         <div className="col-span-6 bg-dark">
           {devs && devs.userDevs !== null && (
