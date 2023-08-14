@@ -15,6 +15,7 @@ import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { BsArrowLeftCircleFill as ArrowLeft } from "react-icons/bs";
+import Unauthenticated from "./Unauthenticated";
 
 const orbFont = Orbitron({ subsets: ["latin"] });
 
@@ -47,6 +48,8 @@ export default function Hashnodex() {
     },
     skip: !session?.user,
   });
+
+  if (status === "unauthenticated") return <Unauthenticated />;
   return (
     <main
       className={`p-4 bg-gray-50 overflow-x-hidden min-h-screen flex flex-col ${orbFont.className}`}

@@ -44,6 +44,7 @@ import { useSession } from "next-auth/react";
 import StarterDev from "./StarterDev";
 import UserDevsSelection from "./UserDevsSelection";
 import Link from "next/link";
+import Unauthenticated from "./Unauthenticated";
 
 export default function Arena() {
   const { showNotification } = useNotification();
@@ -317,6 +318,9 @@ export default function Arena() {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dev1Health, dev2Health]);
+
+  if (status === "unauthenticated") return <Unauthenticated />;
+
   return (
     <main className="h-screen p-4 bg-gray-50 overflow-x-hidden">
       <AnimatePresence>
