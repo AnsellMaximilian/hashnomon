@@ -16,6 +16,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { BsArrowLeftCircleFill as ArrowLeft } from "react-icons/bs";
 import Unauthenticated from "./Unauthenticated";
+import { Move } from "@/lib/services/moves";
+import MoveButton from "./MoveButton";
 
 const orbFont = Orbitron({ subsets: ["latin"] });
 
@@ -36,6 +38,7 @@ const DevInfo = ({
 export default function Hashnodex() {
   const { data: session, status } = useSession();
   const [selectedDev, setSelectedDev] = useState<Dev | null>(null);
+  const [selectedDevMoves, setSelectedDevMoves] = useState<Move[]>([]);
 
   const {
     data: devs,
@@ -69,6 +72,7 @@ export default function Hashnodex() {
                   key={username}
                   username={username}
                   setSelectedDev={setSelectedDev}
+                  setSelectedDevMoves={setSelectedDevMoves}
                 />
               ))}
             </div>
@@ -109,6 +113,11 @@ export default function Hashnodex() {
               <div>
                 <div className="p-4">
                   <DevCard dev={selectedDev} />
+                </div>
+                <div className="px-4 mt-4 grid grid-cols-12 gap-2">
+                  {selectedDevMoves.map((move) => (
+                    <MoveButton key={move.id} move={move} disabled={false} />
+                  ))}
                 </div>
                 <div className="p-2 mt-4">
                   <div className="px-2 py-8 bg-black text-white rounded-md">
