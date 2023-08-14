@@ -78,13 +78,13 @@ export default function Navigation() {
         <NavListItem
           label="Battle"
           icon={logo}
-          description="Just battle"
+          description="Battle and employ other devs"
           href="/play"
         />
         <NavListItem
           label="Hashnodex"
           icon={hashnodex}
-          description="Just dex"
+          description="Info on devs in your team"
           href="/hashnodex"
         />
       </ul>
