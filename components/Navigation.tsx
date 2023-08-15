@@ -42,9 +42,9 @@ const NavListItem = ({
               height={80}
             />
             <div className="">
-              <div className="text-xl font-bold flex gap-2">
+              <div className="text-xl font-bold flex gap-2 justify-center items-center">
                 <span>{label}</span>
-                {authLoading && <LoadIcon className="animate-spin" />}
+                {authLoading && <LoadIcon className="animate-spin text-sm" />}
               </div>
               <div className="text-xs">{description}</div>
             </div>
@@ -82,6 +82,7 @@ export default function Navigation() {
               : "Log in using your Github account"
           }
           onclick={authenticated ? () => signOut() : () => signIn("github")}
+          authLoading={status === "loading"}
         />
         <NavListItem
           label="Battle"
