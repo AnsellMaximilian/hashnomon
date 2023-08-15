@@ -401,122 +401,126 @@ export default function Arena() {
         )}
       </AnimatePresence>
       <AnimatePresence>
-        {gameOn && (
-          <div>
-            <h1 className="text-5xl font-bold text-center text-primary">
-              A Battle Commences!
-            </h1>
-            <div className="relative">
-              <div className="flex flex-col lg:flex-row gap-4 justify-between mt-4 min-h-[500px] bg-secondary shadow-md rounded-md">
-                <div className="flex-1 p-4 flex flex-col justify-center">
-                  {dev1 && (
-                    <DevBattleCard
-                      dev={dev1}
-                      health={dev1Health}
-                      moves={dev1Moves?.userMoves.moves.edges.map(
-                        (edge) => edge.node
-                      )}
-                      doMove={doMove}
-                      onTurn={turn === 1 && !gameOver}
-                    />
-                  )}
-                </div>
-                <div className="flex items-center justify-center relative">
-                  <div className="absolute bg-primary bg-gradient-to-b lg:bg-gradient-to-r from-primary via-blue-400 to-primary h-4 w-full lg:h-auto lg:w-4 lg:inset-y-0 left-1/2 -translate-x-1/2"></div>
-                  <motion.div className="w-32 h-32 relative z-50">
-                    <Image
-                      src={logo}
-                      alt="logo"
-                      className="w-full h-full relative"
-                    />
-                  </motion.div>
-                </div>
-                <div className="flex-1 p-4 flex flex-col justify-center">
-                  {dev2 && (
-                    <DevBattleCard
-                      dev={dev2}
-                      isComputer
-                      health={dev2Health}
-                      side="RIGHT"
-                      moves={dev2Moves?.userMoves.moves.edges.map(
-                        (edge) => edge.node
-                      )}
-                      onTurn={turn === 2 && !gameOver}
-                      isCapturing={isCapturing}
-                    />
-                  )}
+        {gameOn &&
+          dev1Moves?.userMoves !== null &&
+          dev2Moves?.userMoves !== null && (
+            <div>
+              <h1 className="text-5xl font-bold text-center text-primary">
+                A Battle Commences!
+              </h1>
+              <div className="relative">
+                <div className="flex flex-col lg:flex-row gap-4 justify-between mt-4 min-h-[500px] bg-secondary shadow-md rounded-md">
+                  <div className="flex-1 p-4 flex flex-col justify-center">
+                    {dev1 && (
+                      <DevBattleCard
+                        dev={dev1}
+                        health={dev1Health}
+                        moves={dev1Moves?.userMoves.moves.edges.map(
+                          (edge) => edge.node
+                        )}
+                        doMove={doMove}
+                        onTurn={turn === 1 && !gameOver}
+                      />
+                    )}
+                  </div>
+                  <div className="flex items-center justify-center relative">
+                    <div className="absolute bg-primary bg-gradient-to-b lg:bg-gradient-to-r from-primary via-blue-400 to-primary h-4 w-full lg:h-auto lg:w-4 lg:inset-y-0 left-1/2 -translate-x-1/2"></div>
+                    <motion.div className="w-32 h-32 relative z-50">
+                      <Image
+                        src={logo}
+                        alt="logo"
+                        className="w-full h-full relative"
+                      />
+                    </motion.div>
+                  </div>
+                  <div className="flex-1 p-4 flex flex-col justify-center">
+                    {dev2 && (
+                      <DevBattleCard
+                        dev={dev2}
+                        isComputer
+                        health={dev2Health}
+                        side="RIGHT"
+                        moves={dev2Moves?.userMoves.moves.edges.map(
+                          (edge) => edge.node
+                        )}
+                        onTurn={turn === 2 && !gameOver}
+                        isCapturing={isCapturing}
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-            {gameOver &&
-              dev2Health <= 0 &&
-              !isCapturing &&
-              !hasAttemptedCapture && (
-                <div className="mt-4 flex justify-center items-center gap-4">
-                  <div className="text-primary font-bold">
-                    You&apos;ve outsmarted @{dev2?.username}. Would you like to
-                    &quot;negotiate a contract&quot; with them?
-                  </div>
-                  <div className="flex gap-4">
-                    <button
-                      onClick={async () => {
-                        if (dev1Devs && dev2) {
-                          if (dev1Devs.userDevs.devs.includes(dev2.username)) {
-                            showNotification(
-                              `@${dev2?.username} is already working in your team.`,
-                              "ERROR"
-                            );
-                          } else {
-                            showNotification(
-                              `Negotiating a deal with @${dev2?.username}...`
-                            );
-                            setHasAttemptedCapture(true);
-                            setIsCapturing(true);
-                            await wait(6500);
-                            const captured = rollChance(25);
-                            if (captured) {
-                              await updateUserDevs({
-                                variables: {
-                                  // @ts-ignore
-                                  userId: session?.user.id as string,
-                                  devs: [
-                                    ...dev1Devs.userDevs.devs,
-                                    dev2.username,
-                                  ],
-                                },
-                              });
+              {gameOver &&
+                dev2Health <= 0 &&
+                !isCapturing &&
+                !hasAttemptedCapture && (
+                  <div className="mt-4 flex justify-center items-center gap-4">
+                    <div className="text-primary font-bold">
+                      You&apos;ve outsmarted @{dev2?.username}. Would you like
+                      to &quot;negotiate a contract&quot; with them?
+                    </div>
+                    <div className="flex gap-4">
+                      <button
+                        onClick={async () => {
+                          if (dev1Devs && dev2) {
+                            if (
+                              dev1Devs.userDevs.devs.includes(dev2.username)
+                            ) {
                               showNotification(
-                                `You've successfully hired @${dev2?.username} into your team!`,
-                                "SUCCESS"
+                                `@${dev2?.username} is already working in your team.`,
+                                "ERROR"
                               );
                             } else {
                               showNotification(
-                                `@${dev2?.username} denied your request to join your team!`,
-                                "ERROR"
+                                `Negotiating a deal with @${dev2?.username}...`
                               );
+                              setHasAttemptedCapture(true);
+                              setIsCapturing(true);
+                              await wait(6500);
+                              const captured = rollChance(25);
+                              if (captured) {
+                                await updateUserDevs({
+                                  variables: {
+                                    // @ts-ignore
+                                    userId: session?.user.id as string,
+                                    devs: [
+                                      ...dev1Devs.userDevs.devs,
+                                      dev2.username,
+                                    ],
+                                  },
+                                });
+                                showNotification(
+                                  `You've successfully hired @${dev2?.username} into your team!`,
+                                  "SUCCESS"
+                                );
+                              } else {
+                                showNotification(
+                                  `@${dev2?.username} denied your request to join your team!`,
+                                  "ERROR"
+                                );
+                              }
+                              setIsCapturing(false);
+                              await wait(3000);
+                              setHasAttemptedCapture(false);
+                              resetGame();
                             }
-                            setIsCapturing(false);
-                            await wait(3000);
-                            setHasAttemptedCapture(false);
-                            resetGame();
                           }
-                        }
-                      }}
-                      className="px-6 py-3 text-xl rounded-md shadow-lg text-white bg-primary font-bold hover:opacity-90"
-                    >
-                      <span className="font-bold">Yes</span>
-                    </button>
-                    <button
-                      onClick={() => resetGame()}
-                      className="px-6 py-3 text-xl rounded-md shadow-lg text-primary border-2 border-primary font-bold hover:bg-dark"
-                    >
-                      No
-                    </button>
+                        }}
+                        className="px-6 py-3 text-xl rounded-md shadow-lg text-white bg-primary font-bold hover:opacity-90"
+                      >
+                        <span className="font-bold">Yes</span>
+                      </button>
+                      <button
+                        onClick={() => resetGame()}
+                        className="px-6 py-3 text-xl rounded-md shadow-lg text-primary border-2 border-primary font-bold hover:bg-dark"
+                      >
+                        No
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )}
-          </div>
-        )}
+                )}
+            </div>
+          )}
       </AnimatePresence>
     </main>
   );
