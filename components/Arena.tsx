@@ -168,6 +168,7 @@ export default function Arena() {
   const [dev2Health, setDev2Health] = useState(1000);
   const [isCapturing, setIsCapturing] = useState(false);
   const [hasAttemptedCapture, setHasAttemptedCapture] = useState(false);
+  const [dev2FirstTurn, setDev2FirstTurn] = useState(false);
 
   const [turn, setTurn] = useState<1 | 2>(1);
 
@@ -226,6 +227,7 @@ export default function Arena() {
           });
         } else if (move.type === "HEAL") {
           setDev1Health((prev) => prev + move.power);
+          showNotification(`You healed by  ${move.power} points`);
         }
       }
     }
@@ -290,6 +292,7 @@ export default function Arena() {
           });
         } else if (move.type === "HEAL") {
           setDev2Health((prev) => prev + move.power);
+          showNotification(`@${dev2.username} healed by  ${move.power} points`);
         }
       }
     }
@@ -303,6 +306,7 @@ export default function Arena() {
     setTurn(1);
     setDev1(null);
     setDev2(null);
+    setDev2FirstTurn(false);
   };
 
   useEffect(() => {
@@ -322,6 +326,13 @@ export default function Arena() {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dev1Health, dev2Health]);
+
+  useEffect(() => {
+    if (dev2FirstTurn && !gameOver && gameOn) {
+      computerMove();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dev2FirstTurn, gameOver, gameOn]);
 
   if (status === "unauthenticated") return <Unauthenticated />;
 
@@ -387,7 +398,7 @@ export default function Arena() {
                       } else {
                         setTurn(2);
                         await wait(5000);
-                        computerMove();
+                        setDev2FirstTurn(true);
                       }
                     }}
                     className="px-8 py-6 text-3xl rounded-full shadow-lg text-white bg-primary font-bold hover:opacity-90 flex gap-6 justify-between items-center"
