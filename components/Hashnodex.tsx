@@ -63,8 +63,8 @@ export default function Hashnodex() {
         </Link>
         <h1 className="text-2xl text-primary font-bold">Your Hashnodex</h1>
       </header>
-      <div className="grid grid-cols-12 gap-4 bg-primary p-4 rounded-md flex-1 shadow-lg">
-        <div className="col-span-6 bg-dark">
+      <div className="flex flex-col lg:flex-row gap-4 bg-primary p-4 rounded-md flex-1 shadow-lg">
+        <div className="grow min-h-[500px] lg:min-h-0 bg-dark">
           {devs && devs.userDevs !== null && (
             <div className="grid grid-cols-12 gap-2 p-2">
               {devs.userDevs.devs.map((username) => (
@@ -107,7 +107,7 @@ export default function Hashnodex() {
             </div>
           )}
         </div>
-        <div className="col-span-6 bg-dark">
+        <div className="grow bg-dark">
           <AnimatePresence>
             {selectedDev && (
               <div>

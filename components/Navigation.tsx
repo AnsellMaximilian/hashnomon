@@ -24,9 +24,9 @@ const NavListItem = ({
 }) => {
   return (
     <li>
-      <div className="w-64 h-48 shadow-md bg-white -skew-x-12 relative border-gray-100 border-4 hover:bg-light hover:text-primary">
+      <div className="w-64 h-48 shadow-md bg-white  md:-skew-x-12 relative border-gray-100 border-4 hover:bg-light hover:text-primary">
         <button
-          className="absolute inset-0 p-4 flex flex-col items-center justify-center skew-x-12"
+          className="absolute inset-0 p-4 flex flex-col items-center justify-center md:skew-x-12"
           onClick={onclick}
         >
           {href && <Link href={href} className="absolute inset-0"></Link>}
@@ -63,7 +63,7 @@ export default function Navigation() {
 
   return (
     <nav>
-      <ul className="flex gap-2">
+      <ul className="flex gap-2 flex-col md:flex-row">
         <NavListItem
           roundImage={authenticated}
           label={authenticated ? session?.user?.name || "User" : "Login"}

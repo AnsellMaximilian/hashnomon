@@ -322,7 +322,7 @@ export default function Arena() {
   if (status === "unauthenticated") return <Unauthenticated />;
 
   return (
-    <main className="h-screen p-4 bg-gray-50 overflow-x-hidden">
+    <main className="min-h-screen p-4 bg-gray-50 overflow-x-hidden">
       <AnimatePresence>
         {!gameOn && (
           <div>
@@ -335,7 +335,7 @@ export default function Arena() {
               </h1>
             </header>
             <div className="relative">
-              <div className="flex gap-4 justify-between mt-4 min-h-[500px] bg-secondary shadow-md rounded-md">
+              <div className="flex flex-col lg:flex-row gap-4 justify-between mt-4 min-h-[500px] bg-secondary shadow-md rounded-md">
                 {dev1Devs?.userDevs ? (
                   <UserDevsSelection
                     devUsernames={dev1Devs.userDevs.devs}
@@ -350,7 +350,7 @@ export default function Arena() {
                   <StarterDev refetchDevs={refetchDev1Devs} />
                 )}
                 <div className="flex items-center justify-center relative">
-                  <div className="absolute bg-primary bg-gradient-to-r from-primary via-blue-400 to-primary w-4 inset-y-0 left-1/2 -translate-x-1/2"></div>
+                  <div className="absolute bg-primary bg-gradient-to-b lg:bg-gradient-to-r from-primary via-blue-400 to-primary w-full h-4 lg:h-auto lg:w-4 lg:inset-y-0 left-1/2 -translate-x-1/2"></div>
                   <motion.div
                     className="w-32 h-32 relative z-50"
                     exit={{ scale: 10, rotate: 90 }}
@@ -403,7 +403,7 @@ export default function Arena() {
               A Battle Commences!
             </h1>
             <div className="relative">
-              <div className="flex gap-4 justify-between mt-4 min-h-[500px] bg-secondary shadow-md rounded-md">
+              <div className="flex flex-col lg:flex-row gap-4 justify-between mt-4 min-h-[500px] bg-secondary shadow-md rounded-md">
                 <div className="flex-1 p-4 flex flex-col justify-center">
                   {dev1 && (
                     <DevBattleCard
@@ -418,7 +418,7 @@ export default function Arena() {
                   )}
                 </div>
                 <div className="flex items-center justify-center relative">
-                  <div className="absolute bg-primary bg-gradient-to-r from-primary via-blue-400 to-primary w-4 inset-y-0 left-1/2 -translate-x-1/2"></div>
+                  <div className="absolute bg-primary bg-gradient-to-b lg:bg-gradient-to-r from-primary via-blue-400 to-primary h-4 w-full lg:h-auto lg:w-4 lg:inset-y-0 left-1/2 -translate-x-1/2"></div>
                   <motion.div className="w-32 h-32 relative z-50">
                     <Image
                       src={logo}
