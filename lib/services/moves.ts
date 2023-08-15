@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-export type MoveType = "POWER_UP" | "DEFENSE" | "ATTACK" | "VIRUS";
+export type MoveType = "POWER_UP" | "DEFENSE" | "ATTACK" | "VIRUS" | "HEAL";
 
 export type Move = {
   name: string;

@@ -11,6 +11,7 @@ const moveTypeEnum = g.enum("MoveType", [
   "DEFENSE",
   "POWER_UP",
   "VIRUS",
+  "HEAL",
 ]);
 const targetStatEnum = g.enum("TargetStat", ["STRENGTH", "DEFENSE", "SPEED"]);
 

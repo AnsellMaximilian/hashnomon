@@ -224,6 +224,8 @@ export default function Arena() {
             }
             return prev;
           });
+        } else if (move.type === "HEAL") {
+          setDev1Health((prev) => prev + move.power);
         }
       }
     }
@@ -286,6 +288,8 @@ export default function Arena() {
             }
             return prev;
           });
+        } else if (move.type === "HEAL") {
+          setDev2Health((prev) => prev + move.power);
         }
       }
     }
