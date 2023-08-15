@@ -233,7 +233,7 @@ export default function Arena() {
   };
 
   const computerMove = () => {
-    if (dev1 && dev2Moves?.userMoves.moves.edges && gameOn && dev2) {
+    if (dev1 && dev2Moves?.userMoves.moves.edges && dev2) {
       const moveEdge =
         dev2Moves.userMoves.moves.edges[
           Math.floor(Math.random() * dev2Moves.userMoves.moves.edges.length)
@@ -375,9 +375,16 @@ export default function Arena() {
               {dev1 && dev2 && (
                 <div className="mt-4 flex justify-center">
                   <button
-                    onClick={() => {
+                    onClick={async () => {
                       setGameOn(true);
                       setGameOver(false);
+                      if (dev1.stats.speed >= dev2.stats.speed) {
+                        setTurn(1);
+                      } else {
+                        setTurn(2);
+                        await wait(5000);
+                        computerMove();
+                      }
                     }}
                     className="px-8 py-6 text-3xl rounded-full shadow-lg text-white bg-primary font-bold hover:opacity-90 flex gap-6 justify-between items-center"
                   >

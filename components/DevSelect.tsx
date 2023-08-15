@@ -26,7 +26,7 @@ export default function DevSelect({
   return (
     <div className={`flex-1 p-4 flex flex-col`}>
       <div className="flex justify-between items-center mb-4">
-        <div className="mb-2 text-2xl font-bold">Dev {number}</div>
+        <div className="mb-2 text-2xl font-bold">Rival Dev</div>
         {dev && (
           <button
             className="px-2 py-1 bg-white border-2 border-primary rounded-md text-primary font-bold hover:bg-dark"
