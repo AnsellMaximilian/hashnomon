@@ -226,7 +226,10 @@ export default function Arena() {
             return prev;
           });
         } else if (move.type === "HEAL") {
-          setDev1Health((prev) => prev + move.power);
+          setDev1Health((prev) => {
+            const increased = prev + move.power;
+            return increased > 1000 ? 1000 : increased;
+          });
           showNotification(`You healed by  ${move.power} points`);
         }
       }
@@ -291,7 +294,10 @@ export default function Arena() {
             return prev;
           });
         } else if (move.type === "HEAL") {
-          setDev2Health((prev) => prev + move.power);
+          setDev2Health((prev) => {
+            const increased = prev + move.power;
+            return increased > 1000 ? 1000 : increased;
+          });
           showNotification(`@${dev2.username} healed by  ${move.power} points`);
         }
       }
