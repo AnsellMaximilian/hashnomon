@@ -6,6 +6,7 @@ import hashnodex from "@/assets/images/hashnodex.svg";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useNotification } from "@/contexts/Notifications";
 import Link from "next/link";
+import { AiOutlineLoading3Quarters as LoadIcon } from "react-icons/ai";
 
 const NavListItem = ({
   label,
@@ -14,6 +15,7 @@ const NavListItem = ({
   onclick,
   roundImage = false,
   href,
+  authLoading = false,
 }: {
   label: string;
   icon: string;
@@ -21,6 +23,7 @@ const NavListItem = ({
   onclick?: () => void;
   roundImage?: boolean;
   href?: string;
+  authLoading?: boolean;
 }) => {
   return (
     <li>
@@ -39,7 +42,10 @@ const NavListItem = ({
               height={80}
             />
             <div className="">
-              <div className="text-xl font-bold">{label}</div>
+              <div className="text-xl font-bold flex gap-2">
+                <span>{label}</span>
+                {authLoading && <LoadIcon className="animate-spin" />}
+              </div>
               <div className="text-xs">{description}</div>
             </div>
           </div>
@@ -69,7 +75,9 @@ export default function Navigation() {
           label={authenticated ? session?.user?.name || "User" : "Login"}
           icon={authenticated ? session?.user?.image || github : github}
           description={
-            authenticated
+            status === "loading"
+              ? "Loading..."
+              : authenticated
               ? "Sign out of your account"
               : "Log in using your Github account"
           }
